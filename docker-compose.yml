@@ -1,0 +1,52 @@
+services:
+  app:
+    build: .
+    container_name: jogadoresapi
+    ports:
+      - '3000:3000'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=jogadoresdb
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+      - db_network
+
+  postgres:
+    image: postgres:latest
+    container_name: jogadoresdb
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=jogadoresdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-jogadoresdb
+    ports:
+      - '8081:80'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - db_network
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
+  db_network:
+    driver: bridge
