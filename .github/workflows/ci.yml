@@ -26,13 +26,8 @@ jobs:
         run: npm run build
         
       - name: Run tests
-        run: npm test
+        run: npm test:cov
         
-      - name: Prepare coverage report for SonarCloud
-        run: |
-          mkdir -p coverage
-          cp -R coverage/* ./coverage/
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
