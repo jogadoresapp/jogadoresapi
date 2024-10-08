@@ -1,4 +1,4 @@
-import { Player } from './player.entity';
+import { Player } from '../../../domain/entitites/player.entity';
 
 describe('Player Entity', () => {
   describe('constructor', () => {
