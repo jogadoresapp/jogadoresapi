@@ -27,7 +27,7 @@ describe('UpdatePlayerService', () => {
     service = module.get<UpdatePlayerService>(UpdatePlayerService);
   });
 
-  it('should be defined', () => {
+  it('deve estar definido service', () => {
     expect(service).toBeDefined();
   });
 
@@ -39,7 +39,7 @@ describe('UpdatePlayerService', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('should update the player if found', async () => {
+  it('deve lançar NotFoundException se o jogador não for encontrado', async () => {
     const player = new Player(
       'John Doe',
       'john@example.com',

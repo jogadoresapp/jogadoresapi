@@ -7,6 +7,7 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +22,7 @@ import { UpdatePlayerService } from '../../application/services/update-player.se
 import { RegisterPlayerCommand } from '../../application/commands/register-player.command';
 import { Player } from '../../domain/entitites/player.entity';
 import { UpdatePlayerCommand } from '../../application/commands/update-player.command';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('players')
 @Controller('player')
@@ -53,6 +55,7 @@ export class PlayerController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get a player by id' })
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
@@ -68,6 +71,7 @@ export class PlayerController {
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Update a player' })
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
   @ApiBody({ type: UpdatePlayerCommand })

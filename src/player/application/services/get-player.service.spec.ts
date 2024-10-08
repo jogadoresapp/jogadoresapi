@@ -12,9 +12,7 @@ describe('GetPlayerService', () => {
         GetPlayerService,
         {
           provide: PlayerRepository,
-          useValue: {
-            // Mock implementation of PlayerRepository methods if needed
-          },
+          useValue: {},
         },
       ],
     }).compile();
@@ -23,11 +21,11 @@ describe('GetPlayerService', () => {
     playerRepository = module.get<PlayerRepository>(PlayerRepository);
   });
 
-  it('should be defined', () => {
+  it('deve estar definido service getPlayer', () => {
     expect(service).toBeDefined();
   });
 
-  it('should have playerRepository defined', () => {
+  it('deve ter o playerRepository definido', () => {
     expect(service['playerRepository']).toBeDefined();
     expect(service['playerRepository']).toBe(playerRepository);
   });

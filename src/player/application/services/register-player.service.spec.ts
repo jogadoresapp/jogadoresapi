@@ -21,7 +21,7 @@ describe('RegisterPlayerService', () => {
     playerRepository = module.get<PlayerRepository>(PlayerRepository);
   });
 
-  it('should hash the password and save the player', async () => {
+  it('deve criptografar a senha e salvar o jogador', async () => {
     const command = new RegisterPlayerCommand();
     command.name = 'John Doe';
     command.email = 'john@example.com';
