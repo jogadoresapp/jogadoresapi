@@ -17,5 +17,6 @@ import { PlayerRepository } from './infraestructure/repositories/player.reposito
 
     PlayerRepository,
   ],
+  exports: [PlayerRepository],
 })
 export class PlayerModule {}
