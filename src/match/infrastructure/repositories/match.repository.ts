@@ -1,7 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Match } from '../../domain/entities/match.entity';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { Match } from '../../domain/entities/match.entity';
 
 Injectable();
 export class MatchRepository {
@@ -12,6 +13,14 @@ export class MatchRepository {
 
   async save(match: Match): Promise<Match> {
     return this.repository.save(match);
+  }
+
+  async findAllByStatus(status: STATUS_MATCH): Promise<Match[]> {
+    return this.repository.find({ where: { status } });
+  }
+
+  async findAllById(ids: string[]): Promise<Match[]> {
+    return this.repository.findByIds(ids);
   }
 
   async findById(id: string): Promise<Match | null> {

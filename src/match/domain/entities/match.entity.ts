@@ -29,7 +29,7 @@ export class Match {
   @Column()
   status: STATUS_MATCH;
 
-  private constructor(
+  constructor(
     id: string,
     dateGame: string,
     playerId: string,

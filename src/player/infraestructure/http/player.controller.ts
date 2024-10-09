@@ -24,8 +24,8 @@ import { Player } from '../../domain/entitites/player.entity';
 import { UpdatePlayerCommand } from '../../application/commands/update-player.command';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('players')
-@Controller('player')
+@ApiTags('Jogadores')
+@Controller('jogadores')
 export class PlayerController {
   constructor(
     private readonly registerPlayerService: RegisterPlayerService,
@@ -35,17 +35,17 @@ export class PlayerController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new player' })
+  @ApiOperation({ summary: 'Criar um novo jogador' })
   @ApiBody({ type: RegisterPlayerCommand })
   @ApiResponse({
     status: 201,
-    description: 'The player has been successfully created.',
+    description: 'Jogador criado com sucesso.',
     type: String,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({
     status: 409,
-    description: 'Conflict. Player with this email already exists.',
+    description: 'Já existe  um jogador com o email informado.',
   })
   async registerPlayer(
     @Body() command: RegisterPlayerCommand,
@@ -57,14 +57,14 @@ export class PlayerController {
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a player by id' })
+  @ApiOperation({ summary: 'Pegar jogador pelo id' })
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
   @ApiResponse({
     status: 200,
-    description: 'The player has been successfully retrieved.',
+    description: 'Dados do jogador.',
     type: Player,
   })
-  @ApiResponse({ status: 404, description: 'Player not found.' })
+  @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })
   async getPlayer(@Param('id') id: string): Promise<Player> {
     return this.getPlayerService.execute(id);
   }
@@ -72,15 +72,15 @@ export class PlayerController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Update a player' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
+  @ApiOperation({ summary: 'Atualizar jogador' })
+  @ApiParam({ name: 'id', type: 'string', description: 'Jogador ID' })
   @ApiBody({ type: UpdatePlayerCommand })
   @ApiResponse({
     status: 200,
-    description: 'The player has been successfully updated.',
+    description: 'Jogador atualizado com sucesso',
     type: Player,
   })
-  @ApiResponse({ status: 404, description: 'Player not found.' })
+  @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })
   async updatePlayer(
     @Param('id') id: string,
     @Body() command: UpdatePlayerCommand,

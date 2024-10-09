@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginPlayerCommand } from '../../application/commands/login-player.command';
 import { LoginPlayerService } from '../../application/services/login-player.service';
 
-ApiTags('auth');
+@ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly service: LoginPlayerService) {}
