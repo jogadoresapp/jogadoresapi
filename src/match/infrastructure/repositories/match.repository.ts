@@ -18,10 +18,6 @@ export class MatchRepository {
     return this.repository.findOne({ where: { id } });
   }
 
-  async findByIds(ids: string[]): Promise<Match[]> {
-    return this.repository.findByIds(ids);
-  }
-
   async update(id: string, match: Partial<Match>): Promise<Match> {
     await this.repository.update(id, match);
     return this.findById(id);

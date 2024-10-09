@@ -3,7 +3,7 @@ import { DatabaseConfig } from './config/database';
 import { ConfigModule } from '@nestjs/config';
 import { PlayerModule } from './player/player.module';
 import { AuthModule } from './auth/auth.module';
-import { MatchModule } from './match/application/match.module';
+import { MatchModule } from './match/match.module';
 
 @Module({
   imports: [

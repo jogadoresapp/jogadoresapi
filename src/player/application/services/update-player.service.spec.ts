@@ -39,13 +39,8 @@ describe('UpdatePlayerService', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('deve lançar NotFoundException se o jogador não for encontrado', async () => {
-    const player = new Player(
-      'John Doe',
-      'john@example.com',
-      'password123',
-      'matchId123',
-    );
+  it('deve atualizar o jogador se ele for encontrado', async () => {
+    const player = new Player('John Doe', 'john@example.com', 'password123');
     mockPlayerRepository.findById.mockResolvedValue(player);
     mockPlayerRepository.update.mockResolvedValue(player);
 
