@@ -24,8 +24,8 @@ import { Player } from '../../domain/entitites/player.entity';
 import { UpdatePlayerCommand } from '../../application/commands/update-player.command';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('Jogadores')
-@Controller('jogadores')
+@ApiTags('players')
+@Controller('player')
 export class PlayerController {
   constructor(
     private readonly registerPlayerService: RegisterPlayerService,
@@ -35,17 +35,17 @@ export class PlayerController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Criar um novo jogador' })
+  @ApiOperation({ summary: 'Registrar um novo jogador' })
   @ApiBody({ type: RegisterPlayerCommand })
   @ApiResponse({
     status: 201,
-    description: 'Jogador criado com sucesso.',
+    description: 'Jogador foi crido com sucesso.',
     type: String,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({
     status: 409,
-    description: 'Já existe  um jogador com o email informado.',
+    description: 'Já existe um jogador cadastrado com esse email.',
   })
   async registerPlayer(
     @Body() command: RegisterPlayerCommand,
@@ -61,10 +61,9 @@ export class PlayerController {
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
   @ApiResponse({
     status: 200,
-    description: 'Dados do jogador.',
     type: Player,
   })
-  @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })
+  @ApiResponse({ status: 404, description: 'Player not found.' })
   async getPlayer(@Param('id') id: string): Promise<Player> {
     return this.getPlayerService.execute(id);
   }
@@ -72,12 +71,12 @@ export class PlayerController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Atualizar jogador' })
+  @ApiOperation({ summary: 'Update a player' })
   @ApiParam({ name: 'id', type: 'string', description: 'Jogador ID' })
   @ApiBody({ type: UpdatePlayerCommand })
   @ApiResponse({
     status: 200,
-    description: 'Jogador atualizado com sucesso',
+    description: 'Jogador editado com sucesso.',
     type: Player,
   })
   @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })

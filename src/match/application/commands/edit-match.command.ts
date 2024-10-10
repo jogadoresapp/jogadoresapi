@@ -16,7 +16,7 @@ export class EditMatchCommand {
   })
   @IsOptional()
   @IsDateString()
-  public readonly dateGame?: string;
+  public dateGame?: string;
 
   @ApiPropertyOptional({
     description: 'Novo lugar da partida',
@@ -25,7 +25,7 @@ export class EditMatchCommand {
   })
   @IsOptional()
   @IsString()
-  public readonly location?: string;
+  public location?: string;
 
   @ApiPropertyOptional({
     description: 'Novas vagas disponíveis',
@@ -38,5 +38,5 @@ export class EditMatchCommand {
   @IsNumber()
   @Min(1)
   @Max(22)
-  public readonly availableSpots?: number;
+  public availableSpots?: number;
 }

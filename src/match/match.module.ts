@@ -7,7 +7,7 @@ import { MatchRepository } from './infrastructure/repositories/match.repository'
 import { MatchPlayers } from './domain/entities/match-player.entity';
 import { MatchPlayersRepository } from './infrastructure/repositories/match-players.repository';
 import { GetAllMatchesService } from './application/services/get-all-matches.service';
-import { GetPlayerMatchesService } from './application/services/get-player-matches.use-case';
+import { GetPlayerMatchesService } from './application/services/get-player-matches.service';
 import { RequestToPlayMatchService } from './application/services/request-to-play.service';
 import { ConfirmMatchService } from './application/services/confirm-match.service';
 import { CancelMatchService } from './application/services/cancel-match.service';

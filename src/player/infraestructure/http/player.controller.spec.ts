@@ -89,31 +89,17 @@ describe('PlayerController', () => {
     await app.close();
   });
 
-  const makeRequest = async (
-    method: 'post' | 'get' | 'put',
-    url: string,
-    data?: any,
-    statusCode = 200,
-  ) => {
-    let req = request(app.getHttpServer())
-      [method](url)
-      .set('Authorization', `Bearer ${token}`);
-
-    if (data) {
-      req = req.send(data);
-    }
-
-    const response = await req.expect(statusCode);
-    return response;
-  };
-
   it('deve registrar um novo jogador', async () => {
     const command = new RegisterPlayerCommand();
     command.name = 'John Doe';
     command.email = 'john@example.com';
     command.password = 'password123';
 
-    const response = await makeRequest('post', '/player', command, 201);
+    const response = await request(app.getHttpServer())
+      .post('/player')
+      .set('Authorization', `Bearer ${token}`)
+      .send(command)
+      .expect(201);
 
     expect(response.body).toEqual({ id: '1' });
     expect(registerPlayerService.execute).toHaveBeenCalledWith(command);
@@ -122,7 +108,10 @@ describe('PlayerController', () => {
   it('deve obter um jogador por ID', async () => {
     const playerId = '1';
 
-    const response = await makeRequest('get', `/player/${playerId}`);
+    const response = await request(app.getHttpServer())
+      .get(`/player/${playerId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
 
     expect(response.body).toEqual(player);
     expect(getPlayerService.execute).toHaveBeenCalledWith(playerId);
@@ -135,7 +124,11 @@ describe('PlayerController', () => {
       email: 'john.updated@example.com',
     };
 
-    const response = await makeRequest('put', `/player/${playerId}`, command);
+    const response = await request(app.getHttpServer())
+      .put(`/player/${playerId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(command)
+      .expect(200);
 
     expect(response.body).toEqual(player);
     expect(updatePlayerService.execute).toHaveBeenCalledWith(playerId, command);

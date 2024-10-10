@@ -21,6 +21,7 @@ export class GetPlayersMatchesService implements GetMatchPlayesUseCase {
 
     const matchPlayers =
       await this.matchPlayersRepository.findByMatchId(matchId);
+
     const playerIds = matchPlayers.players;
 
     const players = await this.playerRepository.findAllByIds(playerIds);

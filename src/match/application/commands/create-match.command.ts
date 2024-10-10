@@ -8,21 +8,21 @@ export class CreateMatchCommand {
     example: '2024-10-15T18:00:00Z',
   })
   @IsDateString()
-  public readonly dateGame: string;
+  public dateGame: string;
 
   @ApiProperty({
     description: 'O ID do jogador que está criando a partida',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
-  public readonly playerId: string;
+  public playerId: string;
 
   @ApiProperty({
     description: 'O local onde a partida ocorrerá',
     example: 'Estrela da Vila Baummer',
   })
   @IsString()
-  public readonly location: string;
+  public location: string;
 
   @ApiProperty({
     description: 'O nível de habilidade da equipe',
@@ -30,7 +30,7 @@ export class CreateMatchCommand {
     example: TEAM_LEVEL.NORMAL,
   })
   @IsEnum(TEAM_LEVEL)
-  public readonly teamLevel: TEAM_LEVEL;
+  public teamLevel: TEAM_LEVEL;
 
   @ApiProperty({
     description: 'O número de vagas disponíveis para a partida',
@@ -38,5 +38,5 @@ export class CreateMatchCommand {
   })
   @IsInt()
   @Min(1)
-  public readonly availableSpots: number;
+  public availableSpots: number;
 }

@@ -16,4 +16,8 @@ describe('STATUS_MATCH Enum', () => {
   it('should have a value CANCELADA', () => {
     expect(STATUS_MATCH.CANCELADA).toBe('CANCELADA');
   });
+
+  it('should have a value CONFIRMADA', () => {
+    expect(STATUS_MATCH.CONFIRMADA).toBe('CONFIRMADA');
+  });
 });
