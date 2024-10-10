@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CancelMatchUseCase } from '../use-cases/cancel-match.use-case';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 
 @Injectable()
 export class CancelMatchService implements CancelMatchUseCase {

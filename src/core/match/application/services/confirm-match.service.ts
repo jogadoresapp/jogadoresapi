@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 
+import { ConfirmMatchUseCase } from '../use-cases/confirm-match.use-case';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { ConfirmMatchCommand } from '../commands/confirm-match.command';
-import { RequestToPlayMatchUseCase } from '../use-cases/request-to-play.use-case';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 
 @Injectable()
-export class RequestToPlayMatchService implements RequestToPlayMatchUseCase {
+export class ConfirmMatchService implements ConfirmMatchUseCase {
   constructor(
     private readonly matchRepository: MatchRepository,
     private readonly matchPlayersRepository: MatchPlayersRepository,
@@ -25,7 +25,7 @@ export class RequestToPlayMatchService implements RequestToPlayMatchUseCase {
 
     if (match.status !== STATUS_MATCH.A_REALIZAR) {
       throw new BadRequestException(
-        'Can only request to play matches with status A_REALIZAR',
+        'Can only confirm players for matches with status A_REALIZAR',
       );
     }
 
@@ -43,13 +43,21 @@ export class RequestToPlayMatchService implements RequestToPlayMatchUseCase {
       );
     }
 
-    if (matchPlayers.hasRequestedToPlay(command.playerId)) {
+    if (!matchPlayers.hasRequestedToPlay(command.playerId)) {
       throw new BadRequestException(
-        'Player has already requested to play in this match',
+        'Player has not requested to play in this match',
       );
     }
 
-    matchPlayers.addPendingRequest(command.playerId);
+    matchPlayers.addPlayer(command.playerId);
+    matchPlayers.removePendingRequest(command.playerId);
     await this.matchPlayersRepository.save(matchPlayers);
+
+    match.availableSpots--;
+
+    if (match.availableSpots === 0) {
+      match.status = STATUS_MATCH.CONFIRMADA;
+    }
+    await this.matchRepository.update(match.id, match);
   }
 }

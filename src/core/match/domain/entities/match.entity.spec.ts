@@ -1,6 +1,6 @@
 import { Match } from './match.entity';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
 describe('Match Entity', () => {
   it('should create a Match instance with given parameters', () => {

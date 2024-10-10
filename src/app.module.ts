@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DatabaseConfig } from './config/database';
 import { ConfigModule } from '@nestjs/config';
-import { PlayerModule } from './player/player.module';
-import { AuthModule } from './auth/auth.module';
-import { MatchModule } from './match/match.module';
+import { AuthModule } from './core/auth/auth.module';
+import { PlayerModule } from './core/player/player.module';
+import { MatchModule } from './core/match/match.module';
 
 @Module({
   imports: [

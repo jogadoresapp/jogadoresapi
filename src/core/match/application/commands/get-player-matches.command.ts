@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 
 export class GetPlayerMatchesCommand {
   @ApiProperty({

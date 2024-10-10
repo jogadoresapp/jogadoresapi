@@ -1,6 +1,6 @@
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
-import { STATUS_MATCH } from '../../..//common/enums/status-match.enum';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../..//common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
