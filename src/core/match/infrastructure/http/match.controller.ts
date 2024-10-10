@@ -32,9 +32,13 @@ import { ListPendingRequestsMatchesService } from '../../application/services/li
 import { AuthGuard } from '@nestjs/passport';
 import { GetPlayersMatchesService } from '../../application/services/get-players-matches.service';
 import { Player } from '../../../player/domain/entitites/player.entity';
+import { ApiCustomResponses } from 'src/common/decorators/swagger/response.decorator';
+import { MATCH_MESSAGES } from 'src/common/constants/match.messages';
+import { STATUS_CODES } from 'src/common/enums/status-code.enum';
+import { JWT } from 'src/common/constants/jwt';
 
 @ApiTags('Partidas')
-@Controller('matches')
+@Controller('partidas')
 export class MatchController {
   constructor(
     private readonly createService: CreateMatchService,
@@ -49,98 +53,60 @@ export class MatchController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Criar uma nova partida' })
+  @ApiOperation({ summary: MATCH_MESSAGES.CREATE_NEW_MATCH })
   @ApiBody({ type: CreateMatchCommand })
   @ApiResponse({
-    status: 201,
-    description: 'A partida foi criada com sucesso.',
-    schema: {
-      properties: {
-        id: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' },
-      },
-    },
+    status: STATUS_CODES.CREATED,
+    description: MATCH_MESSAGES.SUCCESS_CREATE,
   })
-  @ApiResponse({ status: 400, description: 'Requisição inválida.' })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    status: STATUS_CODES.BAD_REQUEST,
+    description: MATCH_MESSAGES.ERROR_BAD_REQUEST,
+  })
+  @UseGuards(AuthGuard(JWT))
   async createMatch(@Body() command: CreateMatchCommand) {
     const matchId = await this.createService.execute(command);
     return { id: matchId };
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Editar uma partida existente' })
-  @ApiParam({ name: 'id', description: 'ID da partida', type: 'string' })
+  @ApiOperation({ summary: MATCH_MESSAGES.EDIT_MATCH_SUCCESS })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ type: EditMatchCommand })
-  @ApiResponse({ status: 200, description: 'Partida atualizada com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Requisição inválida.' })
-  @ApiResponse({ status: 404, description: 'Partida não encontrada.' })
+  @ApiCustomResponses(MATCH_MESSAGES.EDIT_MATCH_SUCCESS)
   async editMatch(
     @Param('id') id: string,
     @Body() command: Partial<EditMatchCommand>,
   ) {
     await this.editMatchService.execute(id, command);
-    return { message: 'Partida atualizada com sucesso' };
+    return { message: MATCH_MESSAGES.EDIT_MATCH_SUCCESS };
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todas as partidas' })
+  @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES })
   @ApiQuery({
     name: 'status',
     enum: STATUS_MATCH,
-    required: false,
-    description: 'Filtrar partidas por status',
+    required: true,
+    description: MATCH_MESSAGES.FILTER_MATCH_BY_STATUS,
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de partidas',
-    schema: {
-      type: 'array',
-      items: {
-        properties: {
-          id: {
-            type: 'string',
-            example: '123e4567-e89b-12d3-a456-426614174000',
-          },
-          dateGame: { type: 'string', example: '2021-08-01T16:00:00.000Z' },
-          location: { type: 'string', example: 'Campo de futebol' },
-          availableSpots: { type: 'number', example: 10 },
-        },
-      },
-    },
-  })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiCustomResponses(MATCH_MESSAGES.LIST_ALL_MATCHES)
+  @UseGuards(AuthGuard(JWT))
   async getAllMatches(@Query('status') status: STATUS_MATCH) {
     return this.getAllMatchesService.execute(status);
   }
 
-  @Get('player/:playerId')
-  @ApiOperation({ summary: 'Listar partidas de um jogador' })
-  @ApiParam({ name: 'playerId', description: 'ID do jogador', type: 'string' })
+  @Get('jogador/:playerId')
+  @ApiOperation({ summary: MATCH_MESSAGES.LIST_MATCHES_PLAYER })
+  @ApiParam({ name: 'playerId', description: 'ID do jogador' })
   @ApiQuery({
     name: 'status',
     enum: STATUS_MATCH,
-    required: false,
-    description: 'Filtrar partidas por status',
+    required: true,
+    description: MATCH_MESSAGES.FILTER_MATCH_BY_STATUS,
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de partidas do jogador',
-    schema: {
-      type: 'array',
-      items: {
-        properties: {
-          id: {
-            type: 'string',
-            example: '123e4567-e89b-12d3-a456-426614174000',
-          },
-          dateGame: { type: 'string', example: '2021-08-01T16:00:00.000Z' },
-          location: { type: 'string', example: 'Campo de futebol' },
-          availableSpots: { type: 'number', example: 10 },
-        },
-      },
-    },
-  })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER)
+  @UseGuards(AuthGuard(JWT))
   async getPlayerMatches(
     @Param('playerId') playerId: string,
     @Query('status') status?: STATUS_MATCH,
@@ -149,79 +115,71 @@ export class MatchController {
     return this.getPlayerMatchesService.execute(query);
   }
 
-  @Post(':id/request-to-play')
-  @ApiOperation({ summary: 'Solicitar participação em uma partida' })
-  @ApiParam({ name: 'id', description: 'ID da partida', type: 'string' })
+  @Post(':id/solicitar-para-jogar')
+  @ApiOperation({ summary: MATCH_MESSAGES.REQUEST_TO_PLAY })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'Solicitação enviada com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Requisição inválida.' })
-  @ApiResponse({ status: 404, description: 'Partida não encontrada.' })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_REQUEST_PLAY)
+  @UseGuards(AuthGuard(JWT))
   async requestToPlayMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
   ) {
     const command = new ConfirmMatchCommand(id, playerId);
     await this.requestToPlayService.execute(command);
-    return { message: 'Solicitação para jogar enviada com sucesso' };
+    return { message: MATCH_MESSAGES.SUCCESS_REQUEST_PLAY };
   }
 
-  @Post(':id/confirm')
+  @Post(':id/confirmar-jogador')
   @ApiOperation({ summary: 'Confirmar participação de um jogador na partida' })
-  @ApiParam({ name: 'id', description: 'ID da partida', type: 'string' })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'Jogador confirmado com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Requisição inválida.' })
-  @ApiResponse({ status: 404, description: 'Partida não encontrada.' })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
+  @UseGuards(AuthGuard(JWT))
   async confirmMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
   ) {
     const command = new ConfirmMatchCommand(id, playerId);
     await this.confirmMatchService.execute(command);
-    return { message: 'Jogador confirmado para a partida com sucesso' };
+    return { message: MATCH_MESSAGES.SUCCESS_CONFIRM };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Cancelar uma partida' })
-  @ApiParam({ name: 'id', description: 'ID da partida', type: 'string' })
+  @ApiOperation({ summary: MATCH_MESSAGES.CANCEL_MATCH })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
-  @ApiResponse({ status: 200, description: 'Partida cancelada com sucesso.' })
-  @ApiResponse({ status: 400, description: 'Requisição inválida.' })
-  @ApiResponse({ status: 404, description: 'Partida não encontrada.' })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CANCEL)
+  @UseGuards(AuthGuard(JWT))
   async cancelMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
   ) {
     await this.cancelMatchService.execute(id, playerId);
-    return { message: 'Partida cancelada com sucesso' };
+    return { message: MATCH_MESSAGES.SUCCESS_CANCEL };
   }
 
-  @Get(':id/pending-requests')
+  @Get(':id/solicitacoes')
   @ApiOperation({ summary: 'List pending requests for a match' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Match ID' })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiResponse({
-    status: 200,
+    status: STATUS_CODES.OK,
     description: 'Returns a list of player IDs with pending requests',
     type: [String],
   })
-  @ApiResponse({ status: 404, description: 'Match not found' })
-  @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    status: STATUS_CODES.NOT_FOUND,
+    description: MATCH_MESSAGES.ERROR_NOT_FOUND,
+  })
+  @UseGuards(AuthGuard(JWT))
   async listPendingRequests(@Param('id') id: string) {
     return this.listPendingRequestsService.execute(id);
   }
 
-  @Get(':id/players')
-  @ApiOperation({ summary: 'Get all players of a match' })
-  @ApiParam({ name: 'id', description: 'Match ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns an array of players',
-    type: [Player],
-  })
-  @ApiResponse({ status: 404, description: 'Match not found' })
+  @Get(':id/jogadores')
+  @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES_PLAYER })
+  @ApiParam({ name: 'id', description: 'Partida ID' })
+  @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER_SUCCESS)
   async getMatchPlayers(@Param('id') id: string): Promise<Player[]> {
     return this.getAllMatchesPlayerService.execute(id);
   }

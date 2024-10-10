@@ -208,7 +208,7 @@ describe('MatchController', () => {
       .post(`/matches/${matchId}/request-to-play`)
       .set('Authorization', `Bearer ${token}`)
       .send({ playerId })
-      .expect(201);
+      .expect(200);
 
     expect(requestToPlayService.execute).toHaveBeenCalledWith(
       expect.any(ConfirmMatchCommand),
@@ -223,7 +223,7 @@ describe('MatchController', () => {
       .post(`/matches/${matchId}/confirm`)
       .set('Authorization', `Bearer ${token}`)
       .send({ playerId })
-      .expect(201);
+      .expect(200);
 
     expect(confirmMatchService.execute).toHaveBeenCalledWith(
       expect.any(ConfirmMatchCommand),
