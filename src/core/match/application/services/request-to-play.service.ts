@@ -17,7 +17,7 @@ export class RequestToPlayMatchService implements RequestToPlayMatchUseCase {
   async execute(command: ConfirmMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(command.matchId);
 
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', command.matchId);
 
     const matchPlayers = await this.matchPlayersRepository.findByMatchId(
       command.matchId,

@@ -15,7 +15,7 @@ export class ListPendingRequestsMatchesService
 
   async execute(matchId: string): Promise<string[]> {
     const match = await this.matchRepository.findById(matchId);
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', matchId);
 
     const matchPlayers =
       await this.matchPlayersRepository.findByMatchId(matchId);

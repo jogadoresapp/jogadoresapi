@@ -16,7 +16,7 @@ export class GetPlayersMatchesService implements GetMatchPlayesUseCase {
 
   async execute(matchId: string): Promise<Player[]> {
     const match = await this.matchRepository.findById(matchId);
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', matchId);
 
     const matchPlayers =
       await this.matchPlayersRepository.findByMatchId(matchId);

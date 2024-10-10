@@ -31,11 +31,11 @@ import { CancelMatchService } from '../../application/services/cancel-match.serv
 import { ListPendingRequestsMatchesService } from '../../application/services/list-pending-requests-matches.service';
 import { GetPlayersMatchesService } from '../../application/services/get-players-matches.service';
 import { Player } from '../../../player/domain/entitites/player.entity';
-import { ApiCustomResponses } from 'src/common/decorators/swagger/response.decorator';
-import { MATCH_MESSAGES } from 'src/common/constants/match.messages';
-import { STATUS_CODES } from 'src/common/enums/status-code.enum';
-import { JWT } from 'src/common/constants/jwt';
-import { JwtAuth } from 'src/common/decorators/auth/auth.decorator';
+import { ApiCustomResponses } from '../../../../common/decorators/swagger/response.decorator';
+import { MATCH_MESSAGES } from '../../../../common/constants/match.messages';
+import { STATUS_CODES } from '../../../../common/enums/status-code.enum';
+import { JWT } from '../../../../common/constants/jwt';
+import { JwtAuth } from '../../../../common/decorators/auth/auth.decorator';
 
 @ApiTags('Partidas')
 @Controller('partidas')
@@ -74,6 +74,7 @@ export class MatchController {
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ type: EditMatchCommand })
   @ApiCustomResponses(MATCH_MESSAGES.EDIT_MATCH_SUCCESS)
+  @JwtAuth()
   async editMatch(
     @Param('id') id: string,
     @Body() command: Partial<EditMatchCommand>,
@@ -151,11 +152,8 @@ export class MatchController {
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CANCEL)
   @JwtAuth()
-  async cancelMatch(
-    @Param('id') id: string,
-    @Body('playerId') playerId: string,
-  ) {
-    await this.cancelMatchService.execute(id, playerId);
+  async cancelMatch(@Param('id') id: string) {
+    await this.cancelMatchService.execute(id);
     return { message: MATCH_MESSAGES.SUCCESS_CANCEL };
   }
 

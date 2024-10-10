@@ -20,7 +20,7 @@ export class GetPlayerMatchesService implements GetPlayerMatchesUseCase {
     let matches = await this.matchRepository.findAllById(matchIds);
 
     if (query.status) {
-      matches = matches.filter((match) => match.status === query.status);
+      matches = matches.filter((match) => match.getStatus() === query.status);
     }
 
     return matches;

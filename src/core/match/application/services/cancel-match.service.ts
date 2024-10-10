@@ -8,22 +8,23 @@ import { validateExistence } from '../../../../common/helpers/validation.helper'
 export class CancelMatchService implements CancelMatchUseCase {
   constructor(private readonly matchRepository: MatchRepository) {}
 
-  async execute(id: string, playerId: string): Promise<string> {
+  async execute(id: string): Promise<string> {
     const match = await this.matchRepository.findById(id);
 
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', id);
 
-    if (
-      match.playerId !== playerId ||
-      match.status !== STATUS_MATCH.A_REALIZAR
-    ) {
+    this.validateCancellation(match.getStatus());
+
+    match.setStatus(STATUS_MATCH.CANCELADA);
+    await this.matchRepository.update(id, match);
+    return match.getId();
+  }
+
+  private validateCancellation(status: STATUS_MATCH): void {
+    if (status !== STATUS_MATCH.A_REALIZAR) {
       throw new ForbiddenException(
-        'Apenas o criador da partida pode cancelá-la e apenas partidas com o status A_REALIZAR podem ser canceladas.',
+        'Apenas partidas com o status A_REALIZAR podem ser canceladas.',
       );
     }
-
-    match.status = STATUS_MATCH.CANCELADA;
-    await this.matchRepository.update(id, match);
-    return match.id;
   }
 }

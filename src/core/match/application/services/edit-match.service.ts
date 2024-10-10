@@ -10,13 +10,9 @@ export class EditMatchService implements EditMatchUseCase {
 
   async execute(id: string, command: EditMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(id);
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', id);
 
-    Object.assign(match, {
-      dateGame: command.dateGame ?? match.dateGame,
-      location: command.location ?? match.location,
-      availableSpots: command.availableSpots ?? match.availableSpots,
-    });
+    match.updateMatch(command);
 
     await this.matchRepository.update(id, match);
   }

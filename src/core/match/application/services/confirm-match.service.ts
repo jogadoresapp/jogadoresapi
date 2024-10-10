@@ -18,7 +18,7 @@ export class ConfirmMatchService implements ConfirmMatchUseCase {
   async execute(command: ConfirmMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(command.matchId);
 
-    validateExistence(match, 'Match', match.id);
+    validateExistence(match, 'Match', command.matchId);
 
     const matchPlayers = await this.matchPlayersRepository.findByMatchId(
       command.matchId,
@@ -31,11 +31,11 @@ export class ConfirmMatchService implements ConfirmMatchUseCase {
 
     await this.matchPlayersRepository.save(matchPlayers);
 
-    match.availableSpots--;
+    match.setAvailableSpots(match.getAvailableSpots() - 1);
 
-    if (match.availableSpots === 0) {
-      match.status = STATUS_MATCH.CONFIRMADA;
+    if (match.getAvailableSpots() === 0) {
+      match.setStatus(STATUS_MATCH.CONFIRMADA);
     }
-    await this.matchRepository.update(match.id, match);
+    await this.matchRepository.update(match.getId(), match);
   }
 }
