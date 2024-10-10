@@ -47,12 +47,7 @@ describe('PlayerController', () => {
             execute: jest
               .fn()
               .mockResolvedValue(
-                new Player(
-                  'John Doe',
-                  'john@example.com',
-                  'password123',
-                  'matchId123',
-                ),
+                new Player('John Doe', 'john@example.com', 'password123'),
               ),
           },
         },
@@ -62,12 +57,7 @@ describe('PlayerController', () => {
             execute: jest
               .fn()
               .mockResolvedValue(
-                new Player(
-                  'John Doe',
-                  'john@example.com',
-                  'password123',
-                  'matchId123',
-                ),
+                new Player('John Doe', 'john@example.com', 'password123'),
               ),
           },
         },
@@ -91,12 +81,7 @@ describe('PlayerController', () => {
     getPlayerService = module.get<GetPlayerService>(GetPlayerService);
     updatePlayerService = module.get<UpdatePlayerService>(UpdatePlayerService);
 
-    player = new Player(
-      'John Doe',
-      'john@example.com',
-      'password123',
-      'matchId123',
-    );
+    player = new Player('John Doe', 'john@example.com', 'password123');
     token = jwtService.sign({ sub: player.id, email: player.email });
   });
 

@@ -35,17 +35,17 @@ export class PlayerController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new player' })
+  @ApiOperation({ summary: 'Registrar um novo jogador' })
   @ApiBody({ type: RegisterPlayerCommand })
   @ApiResponse({
     status: 201,
-    description: 'The player has been successfully created.',
+    description: 'Jogador foi crido com sucesso.',
     type: String,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({
     status: 409,
-    description: 'Conflict. Player with this email already exists.',
+    description: 'Já existe um jogador cadastrado com esse email.',
   })
   async registerPlayer(
     @Body() command: RegisterPlayerCommand,
@@ -57,11 +57,10 @@ export class PlayerController {
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get a player by id' })
+  @ApiOperation({ summary: 'Pegar jogador pelo id' })
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
   @ApiResponse({
     status: 200,
-    description: 'The player has been successfully retrieved.',
     type: Player,
   })
   @ApiResponse({ status: 404, description: 'Player not found.' })
@@ -73,14 +72,14 @@ export class PlayerController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Update a player' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
+  @ApiParam({ name: 'id', type: 'string', description: 'Jogador ID' })
   @ApiBody({ type: UpdatePlayerCommand })
   @ApiResponse({
     status: 200,
-    description: 'The player has been successfully updated.',
+    description: 'Jogador editado com sucesso.',
     type: Player,
   })
-  @ApiResponse({ status: 404, description: 'Player not found.' })
+  @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })
   async updatePlayer(
     @Param('id') id: string,
     @Body() command: UpdatePlayerCommand,

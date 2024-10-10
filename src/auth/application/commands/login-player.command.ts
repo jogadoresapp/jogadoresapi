@@ -1,5 +1,3 @@
-// src/auth/application/use-cases/login-player.use-case.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 

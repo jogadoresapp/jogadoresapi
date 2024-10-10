@@ -9,10 +9,8 @@ export class GetPlayerService implements GetPlayerUseCase {
 
   async execute(id: string): Promise<Player> {
     const player = await this.playerRepository.findById(id);
-
     if (!player)
       throw new NotFoundException(`Jogador com ID ${id} não encontrado`);
-
     return player;
   }
 }

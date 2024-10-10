@@ -1,6 +1,6 @@
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { PlayerModule } from 'src/player/player.module';
+import { PlayerModule } from '../player/player.module';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { AuthService } from './application/services/auth.service';
 import { LoginPlayerService } from './application/services/login-player.service';
