@@ -3,7 +3,7 @@ import { CreateMatchService } from './create-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { CreateMatchCommand } from '../commands/create-match.command';
 import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
 describe('CreateMatchService', () => {
   let service: CreateMatchService;

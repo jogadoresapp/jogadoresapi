@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetAllMatchesService } from './get-all-matches.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
 describe('GetAllMatchesService', () => {
   let service: GetAllMatchesService;

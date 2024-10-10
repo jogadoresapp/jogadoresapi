@@ -5,8 +5,8 @@ import { MatchRepository } from '../../infrastructure/repositories/match.reposit
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
 import { Player } from '../../../player/domain/entitites/player.entity';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
 import { MatchPlayers } from '../../domain/entities/match-player.entity';
 

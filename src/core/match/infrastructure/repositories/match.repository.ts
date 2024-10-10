@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
 
 Injectable();

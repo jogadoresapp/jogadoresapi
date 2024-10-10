@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { CancelMatchService } from './cancel-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
 describe('CancelMatchService', () => {
   let service: CancelMatchService;

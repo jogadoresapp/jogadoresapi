@@ -1,6 +1,6 @@
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { GetAllMatchesUseCase } from '../use-cases/get-all-matches.use-case';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Injectable } from '@nestjs/common';
 import { Match } from '../../domain/entities/match.entity';
 

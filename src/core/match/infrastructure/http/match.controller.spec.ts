@@ -12,7 +12,7 @@ import { GetPlayersMatchesService } from '../../application/services/get-players
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { ConfirmMatchCommand } from '../../application/commands/confirm-match.command';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Player } from '../../../player/domain/entitites/player.entity';
 import { INestApplication } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';

@@ -3,8 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchRepository } from './match.repository';
 import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../common/enums/team-level.enum';
-import { STATUS_MATCH } from '../../../common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 
 describe('MatchRepository', () => {
   let matchRepository: MatchRepository;
