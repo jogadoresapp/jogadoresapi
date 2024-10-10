@@ -1,11 +1,8 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CancelMatchUseCase } from '../use-cases/cancel-match.use-case';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { validateExistence } from '../../../../common/helpers/validation.helper';
 
 @Injectable()
 export class CancelMatchService implements CancelMatchUseCase {
@@ -14,9 +11,7 @@ export class CancelMatchService implements CancelMatchUseCase {
   async execute(id: string, playerId: string): Promise<string> {
     const match = await this.matchRepository.findById(id);
 
-    if (!match) {
-      throw new NotFoundException(`Partida com o ID ${id} não encontrada.`);
-    }
+    validateExistence(match, 'Match', match.id);
 
     if (
       match.playerId !== playerId ||

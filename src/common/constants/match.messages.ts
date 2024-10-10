@@ -16,4 +16,6 @@ export const MATCH_MESSAGES = {
   CREATE_NEW_MATCH: 'Criar nova partida',
   REQUEST_TO_PLAY: 'Solicitar para jogar',
   CANCEL_MATCH: 'Cancelar partida',
+  RETURN_PENDING_REQUESTS: 'Retornar solicitações pendentes',
+  CONFIRM_MATCH: 'Confirmar jogador',
 };

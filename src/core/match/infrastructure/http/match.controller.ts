@@ -7,7 +7,6 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { CreateMatchService } from '../../application/services/create-match.service';
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
@@ -18,6 +17,7 @@ import {
   ApiTags,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { EditMatchService } from '../../application/services/edit-match.service';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
@@ -29,13 +29,13 @@ import { RequestToPlayMatchService } from '../../application/services/request-to
 import { ConfirmMatchService } from '../../application/services/confirm-match.service';
 import { CancelMatchService } from '../../application/services/cancel-match.service';
 import { ListPendingRequestsMatchesService } from '../../application/services/list-pending-requests-matches.service';
-import { AuthGuard } from '@nestjs/passport';
 import { GetPlayersMatchesService } from '../../application/services/get-players-matches.service';
 import { Player } from '../../../player/domain/entitites/player.entity';
 import { ApiCustomResponses } from 'src/common/decorators/swagger/response.decorator';
 import { MATCH_MESSAGES } from 'src/common/constants/match.messages';
 import { STATUS_CODES } from 'src/common/enums/status-code.enum';
 import { JWT } from 'src/common/constants/jwt';
+import { JwtAuth } from 'src/common/decorators/auth/auth.decorator';
 
 @ApiTags('Partidas')
 @Controller('partidas')
@@ -63,7 +63,7 @@ export class MatchController {
     status: STATUS_CODES.BAD_REQUEST,
     description: MATCH_MESSAGES.ERROR_BAD_REQUEST,
   })
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async createMatch(@Body() command: CreateMatchCommand) {
     const matchId = await this.createService.execute(command);
     return { id: matchId };
@@ -91,7 +91,7 @@ export class MatchController {
     description: MATCH_MESSAGES.FILTER_MATCH_BY_STATUS,
   })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_ALL_MATCHES)
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async getAllMatches(@Query('status') status: STATUS_MATCH) {
     return this.getAllMatchesService.execute(status);
   }
@@ -106,7 +106,7 @@ export class MatchController {
     description: MATCH_MESSAGES.FILTER_MATCH_BY_STATUS,
   })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER)
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async getPlayerMatches(
     @Param('playerId') playerId: string,
     @Query('status') status?: STATUS_MATCH,
@@ -120,7 +120,7 @@ export class MatchController {
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_REQUEST_PLAY)
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async requestToPlayMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
@@ -131,11 +131,11 @@ export class MatchController {
   }
 
   @Post(':id/confirmar-jogador')
-  @ApiOperation({ summary: 'Confirmar participação de um jogador na partida' })
+  @ApiOperation({ summary: MATCH_MESSAGES.CONFIRM_MATCH })
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async confirmMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
@@ -150,7 +150,7 @@ export class MatchController {
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CANCEL)
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async cancelMatch(
     @Param('id') id: string,
     @Body('playerId') playerId: string,
@@ -160,18 +160,18 @@ export class MatchController {
   }
 
   @Get(':id/solicitacoes')
-  @ApiOperation({ summary: 'List pending requests for a match' })
+  @ApiOperation({ summary: MATCH_MESSAGES.RETURN_PENDING_REQUESTS })
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiResponse({
     status: STATUS_CODES.OK,
-    description: 'Returns a list of player IDs with pending requests',
+    description: MATCH_MESSAGES.RETURN_PENDING_REQUESTS,
     type: [String],
   })
   @ApiResponse({
     status: STATUS_CODES.NOT_FOUND,
     description: MATCH_MESSAGES.ERROR_NOT_FOUND,
   })
-  @UseGuards(AuthGuard(JWT))
+  @JwtAuth()
   async listPendingRequests(@Param('id') id: string) {
     return this.listPendingRequestsService.execute(id);
   }
@@ -180,6 +180,7 @@ export class MatchController {
   @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES_PLAYER })
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER_SUCCESS)
+  @ApiBearerAuth(JWT)
   async getMatchPlayers(@Param('id') id: string): Promise<Player[]> {
     return this.getAllMatchesPlayerService.execute(id);
   }
