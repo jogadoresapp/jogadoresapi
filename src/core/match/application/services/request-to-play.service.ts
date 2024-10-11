@@ -5,7 +5,7 @@ import { MatchPlayersRepository } from '../../infrastructure/repositories/match-
 import { ConfirmMatchCommand } from '../commands/confirm-match.command';
 import { RequestToPlayMatchUseCase } from '../use-cases/request-to-play.use-case';
 import { validateExistence } from '../../../../common/helpers/validation.helper';
-import { validateMatch } from 'src/common/validators/match.validators';
+import { validateMatch } from '../../../../common/validators/match.validators';
 
 @Injectable()
 export class RequestToPlayMatchService implements RequestToPlayMatchUseCase {

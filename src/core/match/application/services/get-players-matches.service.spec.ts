@@ -6,9 +6,9 @@ import { MatchPlayersRepository } from '../../infrastructure/repositories/match-
 import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
 import { Player } from '../../../player/domain/entitites/player.entity';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
 import { MatchPlayers } from '../../domain/entities/match-player.entity';
+import { CreateMatchCommand } from '../commands/create-match.command';
 
 describe('GetPlayersMatchesService', () => {
   let service: GetPlayersMatchesService;
@@ -17,6 +17,14 @@ describe('GetPlayersMatchesService', () => {
   let playerRepository: PlayerRepository;
   let match: Match;
   let matchPlayers: MatchPlayers;
+  const playerId = 'player-id-1';
+  const command: CreateMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    playerId,
+    location: 'Test Location',
+    teamLevel: TEAM_LEVEL.INICIANTE,
+    availableSpots: 10,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,15 +58,8 @@ describe('GetPlayersMatchesService', () => {
     );
     playerRepository = module.get<PlayerRepository>(PlayerRepository);
 
-    match = new Match(
-      '1',
-      '2024-10-15T18:00:00Z',
-      '123e4567-e89b-12d3-a456-426614174000',
-      'Estrela da Vila Baummer',
-      TEAM_LEVEL.AVANCADO,
-      10,
-      STATUS_MATCH.A_REALIZAR,
-    );
+    match = Match.newMatch(command);
+    match.setId('1');
 
     matchPlayers = {
       matchId: '1',
@@ -73,7 +74,7 @@ describe('GetPlayersMatchesService', () => {
     };
   });
 
-  it('should return players for a valid match ID', async () => {
+  it('deve retornar os jogadores para um ID de partida válido', async () => {
     const matchId = 'valid-match-id';
     const players: Player[] = [
       { id: 'player1', name: 'Player 1' } as Player,
@@ -90,20 +91,12 @@ describe('GetPlayersMatchesService', () => {
     expect(result).toEqual(players);
   });
 
-  it('should throw NotFoundException if match is not found', async () => {
+  it('deve lançar NotFoundException se a partida não for encontrada', async () => {
     const matchId = 'invalid-match-id';
 
     jest
       .spyOn(matchRepository, 'findById')
-      .mockResolvedValue({
-        id: '1',
-        dateGame: '2024-10-15T18:00:00Z',
-        playerId: '123e4567-e89b-12d3-a456-426614174000',
-        location: 'Estrela da Vila Baummer',
-        teamLevel: TEAM_LEVEL.AVANCADO,
-        availableSpots: 1,
-        status: STATUS_MATCH.A_REALIZAR,
-      })
+      .mockResolvedValue(match)
       .mockReturnValue(null);
 
     await expect(service.execute(matchId)).rejects.toThrow(NotFoundException);

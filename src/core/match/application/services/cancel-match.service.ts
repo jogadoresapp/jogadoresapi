@@ -11,7 +11,7 @@ export class CancelMatchService implements CancelMatchUseCase {
   async execute(id: string): Promise<string> {
     const match = await this.matchRepository.findById(id);
 
-    validateExistence(match, 'Match', id);
+    validateExistence(match, 'Partida', id);
 
     this.validateCancellation(match.getStatus());
 

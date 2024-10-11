@@ -7,7 +7,7 @@ import { EditMatchCommand } from '../../application/commands/edit-match.command'
 @Entity()
 export class Match {
   @PrimaryGeneratedColumn('uuid')
-  private readonly id: string;
+  private id: string;
 
   @Column()
   private dateGame: string;
@@ -93,6 +93,10 @@ export class Match {
 
   getStatus(): STATUS_MATCH {
     return this.status;
+  }
+
+  setId(id: string): void {
+    this.id = id;
   }
 
   setDateGame(dateGame: string): void {

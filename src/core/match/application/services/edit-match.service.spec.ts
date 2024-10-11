@@ -1,85 +1,69 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { EditMatchService } from './edit-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { EditMatchCommand } from '../commands/edit-match.command';
+import { Match } from '../../domain/entities/match.entity';
+import { CreateMatchCommand } from '../commands/create-match.command';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
 describe('EditMatchService', () => {
   let service: EditMatchService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let repository: MatchRepository;
+  let matchRepository: MatchRepository;
+  let match: Match;
 
-  const mockMatchRepository = {
-    findById: jest.fn(),
-    update: jest.fn(),
+  const matchId = 'existing-id';
+  const command: EditMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    location: 'New Location',
+    availableSpots: 10,
+  };
+
+  const commandNew: CreateMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    playerId: '123e4567-e89b-12d3-a456-426614174000',
+    location: 'Estrela da Vila Baummer',
+    teamLevel: TEAM_LEVEL.AVANCADO,
+    availableSpots: 8,
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EditMatchService,
-        { provide: MatchRepository, useValue: mockMatchRepository },
+        {
+          provide: MatchRepository,
+          useValue: {
+            findById: jest.fn(),
+            update: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<EditMatchService>(EditMatchService);
-    repository = module.get<MatchRepository>(MatchRepository);
+    matchRepository = module.get<MatchRepository>(MatchRepository);
+    match = Match.newMatch(commandNew);
+    match.setId(matchId);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  it('deve lançar NotFoundException se a partida não for encontrada.', async () => {
+    jest.spyOn(matchRepository, 'findById').mockResolvedValue(null);
 
-  it('should throw NotFoundException if match is not found', async () => {
-    mockMatchRepository.findById.mockResolvedValue(null);
-
-    await expect(
-      service.execute('nonexistent-id', new EditMatchCommand()),
-    ).rejects.toThrow(NotFoundException);
-  });
-
-  it('should update match with new values', async () => {
-    const match = {
-      id: 'existing-id',
-      dateGame: '2024-10-15T16:00:00Z',
-      location: 'Old Location',
-      availableSpots: 10,
-    };
-
-    const command = new EditMatchCommand();
-    command.dateGame = '2024-10-15T18:00:00Z';
-    command.location = 'New Location';
-    command.availableSpots = 5;
-
-    mockMatchRepository.findById.mockResolvedValue(match);
-
-    await service.execute('existing-id', command);
-
-    expect(mockMatchRepository.update).toHaveBeenCalledWith('existing-id', {
-      ...match,
-      dateGame: command.dateGame,
-      location: command.location,
-      availableSpots: command.availableSpots,
-    });
-  });
-
-  it('should retain old values if new values are not provided', async () => {
-    const match = {
-      id: 'existing-id',
-      dateGame: '2024-10-15T18:00:00Z',
-      location: 'Old Location',
-      availableSpots: 10,
-    };
-
-    const command = new EditMatchCommand();
-
-    mockMatchRepository.findById.mockResolvedValue(match);
-
-    await service.execute('existing-id', command);
-
-    expect(mockMatchRepository.update).toHaveBeenCalledWith(
-      'existing-id',
-      match,
+    await expect(service.execute(matchId, command)).rejects.toThrow(
+      new NotFoundException('Partida com ID existing-id não encontrado'),
     );
+  });
+
+  it('deve atualizar a partida e retornar void.', async () => {
+    jest.spyOn(matchRepository, 'findById').mockResolvedValue(match);
+    jest.spyOn(matchRepository, 'update').mockResolvedValue(null);
+    jest.spyOn(match, 'updateMatch').mockImplementation(jest.fn());
+
+    await service.execute(matchId, command);
+
+    expect(matchRepository.findById).toHaveBeenCalledWith(matchId);
+    expect(match.updateMatch).toHaveBeenCalledWith(command);
+    expect(matchRepository.update).toHaveBeenCalledWith(matchId, match);
   });
 });

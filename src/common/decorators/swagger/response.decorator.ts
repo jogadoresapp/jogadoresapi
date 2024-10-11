@@ -2,7 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 
 import { MATCH_MESSAGES } from './../../constants/match.messages';
-import { STATUS_CODES } from 'src/common/enums/status-code.enum';
+import { STATUS_CODES } from '../../../common/enums/status-code.enum';
 
 export function ApiCustomResponses(successMessage: string) {
   return applyDecorators(

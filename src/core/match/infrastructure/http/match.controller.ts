@@ -23,7 +23,6 @@ import { EditMatchService } from '../../application/services/edit-match.service'
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { GetAllMatchesService } from '../../application/services/get-all-matches.service';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
-import { GetPlayerMatchesService } from '../../application/services/get-player-matches.service';
 import { ConfirmMatchCommand } from '../../application/commands/confirm-match.command';
 import { RequestToPlayMatchService } from '../../application/services/request-to-play.service';
 import { ConfirmMatchService } from '../../application/services/confirm-match.service';
@@ -36,6 +35,7 @@ import { MATCH_MESSAGES } from '../../../../common/constants/match.messages';
 import { STATUS_CODES } from '../../../../common/enums/status-code.enum';
 import { JWT } from '../../../../common/constants/jwt';
 import { JwtAuth } from '../../../../common/decorators/auth/auth.decorator';
+import { GetMatchesByPlayerService } from '../../application/services/get-matches-by-player.service';
 
 @ApiTags('Partidas')
 @Controller('partidas')
@@ -44,12 +44,12 @@ export class MatchController {
     private readonly createService: CreateMatchService,
     private readonly editMatchService: EditMatchService,
     private readonly getAllMatchesService: GetAllMatchesService,
-    private readonly getPlayerMatchesService: GetPlayerMatchesService,
     private readonly requestToPlayService: RequestToPlayMatchService,
     private readonly confirmMatchService: ConfirmMatchService,
     private readonly cancelMatchService: CancelMatchService,
     private readonly listPendingRequestsService: ListPendingRequestsMatchesService,
     private readonly getAllMatchesPlayerService: GetPlayersMatchesService,
+    private readonly getMatchesByPlayerService: GetMatchesByPlayerService,
   ) {}
 
   @Post()
@@ -113,7 +113,7 @@ export class MatchController {
     @Query('status') status?: STATUS_MATCH,
   ) {
     const query = { playerId, status };
-    return this.getPlayerMatchesService.execute(query);
+    return this.getMatchesByPlayerService.execute(query);
   }
 
   @Post(':id/solicitar-para-jogar')

@@ -6,7 +6,7 @@ import { MatchPlayersRepository } from '../../infrastructure/repositories/match-
 import { ConfirmMatchCommand } from '../commands/confirm-match.command';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { validateExistence } from '../../../../common/helpers/validation.helper';
-import { validateMatch } from 'src/common/validators/match.validators';
+import { validateMatch } from '../../../../common/validators/match.validators';
 
 @Injectable()
 export class ConfirmMatchService implements ConfirmMatchUseCase {
@@ -18,7 +18,7 @@ export class ConfirmMatchService implements ConfirmMatchUseCase {
   async execute(command: ConfirmMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(command.matchId);
 
-    validateExistence(match, 'Match', command.matchId);
+    validateExistence(match, 'Partida', command.matchId);
 
     const matchPlayers = await this.matchPlayersRepository.findByMatchId(
       command.matchId,

@@ -12,7 +12,7 @@ export const MATCH_MESSAGES = {
   FILTER_MATCH_BY_STATUS: 'Filtrar partidas por status',
   LIST_MATCHES_PLAYER: 'Listar partidas de um jogador',
   LIST_MATCHES_PLAYER_SUCCESS: 'Partidas do jogador listadas com sucesso',
-  LIST_ALL_MATCHES_PLAYER: 'Listar todas as partidas de um jogador',
+  LIST_ALL_MATCHES_PLAYER: 'Listar jogadores da partida',
   CREATE_NEW_MATCH: 'Criar nova partida',
   REQUEST_TO_PLAY: 'Solicitar para jogar',
   CANCEL_MATCH: 'Cancelar partida',

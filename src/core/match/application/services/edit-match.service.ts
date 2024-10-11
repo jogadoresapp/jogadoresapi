@@ -10,7 +10,7 @@ export class EditMatchService implements EditMatchUseCase {
 
   async execute(id: string, command: EditMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(id);
-    validateExistence(match, 'Match', id);
+    validateExistence(match, 'Partida', id);
 
     match.updateMatch(command);
 
