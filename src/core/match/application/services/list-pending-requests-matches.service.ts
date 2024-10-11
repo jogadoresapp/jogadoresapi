@@ -1,7 +1,8 @@
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { ListPendingRequestsMatchesUseCase } from '../use-cases/list-pending-requests-matches.use-case';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { validateExistence } from '../../../../common/helpers/validation.helper';
 
 @Injectable()
 export class ListPendingRequestsMatchesService
@@ -14,9 +15,7 @@ export class ListPendingRequestsMatchesService
 
   async execute(matchId: string): Promise<string[]> {
     const match = await this.matchRepository.findById(matchId);
-    if (!match) {
-      throw new NotFoundException(`Match with ID ${matchId} not found`);
-    }
+    validateExistence(match, 'Partida', matchId);
 
     const matchPlayers =
       await this.matchPlayersRepository.findByMatchId(matchId);

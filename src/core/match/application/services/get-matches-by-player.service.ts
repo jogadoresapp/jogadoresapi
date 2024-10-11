@@ -6,7 +6,7 @@ import { GetPlayerMatchesCommand } from '../commands/get-player-matches.command'
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 
 @Injectable()
-export class GetPlayerMatchesService implements GetPlayerMatchesUseCase {
+export class GetMatchesByPlayerService implements GetPlayerMatchesUseCase {
   constructor(
     private readonly matchRepository: MatchRepository,
     private readonly matchPlayersRepository: MatchPlayersRepository,
@@ -20,7 +20,7 @@ export class GetPlayerMatchesService implements GetPlayerMatchesUseCase {
     let matches = await this.matchRepository.findAllById(matchIds);
 
     if (query.status) {
-      matches = matches.filter((match) => match.status === query.status);
+      matches = matches.filter((match) => match.getStatus() === query.status);
     }
 
     return matches;

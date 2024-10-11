@@ -16,7 +16,7 @@ export class MatchRepository {
   }
 
   async findAllByStatus(status: STATUS_MATCH): Promise<Match[]> {
-    return this.repository.find({ where: { status } });
+    return this.repository.find({ where: { status } as any });
   }
 
   async findAllById(ids: string[]): Promise<Match[]> {
@@ -24,7 +24,7 @@ export class MatchRepository {
   }
 
   async findById(id: string): Promise<Match | null> {
-    return this.repository.findOne({ where: { id } });
+    return this.repository.findOne({ where: { id } as any });
   }
 
   async update(id: string, match: Partial<Match>): Promise<Match> {

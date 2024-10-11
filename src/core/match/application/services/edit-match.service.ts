@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { EditMatchUseCase } from '../use-cases/edit-match.use-case';
 import { EditMatchCommand } from '../commands/edit-match.command';
+import { validateExistence } from '../../../../common/helpers/validation.helper';
 
 @Injectable()
 export class EditMatchService implements EditMatchUseCase {
@@ -9,15 +10,9 @@ export class EditMatchService implements EditMatchUseCase {
 
   async execute(id: string, command: EditMatchCommand): Promise<void> {
     const match = await this.matchRepository.findById(id);
-    if (!match) {
-      throw new NotFoundException(`Match with ID ${id} not found`);
-    }
+    validateExistence(match, 'Partida', id);
 
-    Object.assign(match, {
-      dateGame: command.dateGame ?? match.dateGame,
-      location: command.location ?? match.location,
-      availableSpots: command.availableSpots ?? match.availableSpots,
-    });
+    match.updateMatch(command);
 
     await this.matchRepository.update(id, match);
   }

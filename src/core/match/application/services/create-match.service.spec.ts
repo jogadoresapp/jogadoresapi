@@ -26,11 +26,11 @@ describe('CreateMatchService', () => {
     matchRepository = module.get<MatchRepository>(MatchRepository);
   });
 
-  it('should be defined', () => {
+  it('deve estar definido', () => {
     expect(service).toBeDefined();
   });
 
-  it('should save a new match and return its id', async () => {
+  it('deve salvar uma nova partida e retornar seu ID', async () => {
     const command: CreateMatchCommand = {
       dateGame: '2024-10-15T18:00:00Z',
       playerId: '123e4567-e89b-12d3-a456-426614174000',
@@ -40,7 +40,8 @@ describe('CreateMatchService', () => {
     };
 
     const match = Match.newMatch(command);
-    const savedMatch = { ...match, id: '123' };
+    const savedMatch = match;
+    savedMatch.setId('123');
 
     jest.spyOn(Match, 'newMatch').mockReturnValue(match);
     jest.spyOn(matchRepository, 'save').mockResolvedValue(savedMatch);

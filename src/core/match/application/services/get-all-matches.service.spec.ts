@@ -4,10 +4,20 @@ import { MatchRepository } from '../../infrastructure/repositories/match.reposit
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { CreateMatchCommand } from '../commands/create-match.command';
 
 describe('GetAllMatchesService', () => {
   let service: GetAllMatchesService;
   let matchRepository: MatchRepository;
+  const command: CreateMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    playerId: '123e4567-e89b-12d3-a456-426614174000',
+    location: 'Estrela da Vila Baummer',
+    teamLevel: TEAM_LEVEL.AVANCADO,
+    availableSpots: 10,
+  };
+
+  const match = Match.newMatch(command);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,19 +36,9 @@ describe('GetAllMatchesService', () => {
     matchRepository = module.get<MatchRepository>(MatchRepository);
   });
 
-  it('should return matches for a valid status', async () => {
+  it('deve retornar partidas para um status válido', async () => {
     const status = STATUS_MATCH.A_REALIZAR;
-    const matches: Match[] = [
-      new Match(
-        '1',
-        '2024-10-15T18:00:00Z',
-        '123e4567-e89b-12d3-a456-426614174000',
-        'Estrela da Vila Baummer',
-        TEAM_LEVEL.AVANCADO,
-        10,
-        STATUS_MATCH.A_REALIZAR,
-      ),
-    ];
+    const matches: Match[] = [match];
 
     jest.spyOn(matchRepository, 'findAllByStatus').mockResolvedValue(matches);
 
@@ -46,7 +46,7 @@ describe('GetAllMatchesService', () => {
     expect(result).toEqual(matches);
   });
 
-  it('should return an empty array if no matches are found', async () => {
+  it('deve retornar um array vazio se nenhuma partida for encontrada', async () => {
     const status = STATUS_MATCH.A_REALIZAR;
 
     jest.spyOn(matchRepository, 'findAllByStatus').mockResolvedValue([]);
@@ -55,7 +55,7 @@ describe('GetAllMatchesService', () => {
     expect(result).toEqual([]);
   });
 
-  it('should throw an error if repository throws an error', async () => {
+  it('deve lançar um erro se o repositório lançar um erro.', async () => {
     const status = STATUS_MATCH.A_REALIZAR;
 
     jest

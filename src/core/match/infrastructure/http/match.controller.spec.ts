@@ -3,7 +3,6 @@ import { MatchController } from './match.controller';
 import { CreateMatchService } from '../../application/services/create-match.service';
 import { EditMatchService } from '../../application/services/edit-match.service';
 import { GetAllMatchesService } from '../../application/services/get-all-matches.service';
-import { GetPlayerMatchesService } from '../../application/services/get-player-matches.service';
 import { RequestToPlayMatchService } from '../../application/services/request-to-play.service';
 import { ConfirmMatchService } from '../../application/services/confirm-match.service';
 import { CancelMatchService } from '../../application/services/cancel-match.service';
@@ -11,6 +10,7 @@ import { ListPendingRequestsMatchesService } from '../../application/services/li
 import { GetPlayersMatchesService } from '../../application/services/get-players-matches.service';
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ConfirmMatchCommand } from '../../application/commands/confirm-match.command';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Player } from '../../../player/domain/entitites/player.entity';
@@ -19,6 +19,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '../../../auth/infrastructure/strategies/jwt.strategy';
 import * as request from 'supertest';
+import { GetMatchesByPlayerService } from '../../application/services/get-matches-by-player.service';
 
 describe('MatchController', () => {
   let app: INestApplication;
@@ -28,7 +29,7 @@ describe('MatchController', () => {
   let createMatchService: CreateMatchService;
   let editMatchService: EditMatchService;
   let getAllMatchesService: GetAllMatchesService;
-  let getPlayerMatchesService: GetPlayerMatchesService;
+  let getPlayerMatchesService: GetMatchesByPlayerService;
   let requestToPlayService: RequestToPlayMatchService;
   let confirmMatchService: ConfirmMatchService;
   let cancelMatchService: CancelMatchService;
@@ -67,7 +68,7 @@ describe('MatchController', () => {
           },
         },
         {
-          provide: GetPlayerMatchesService,
+          provide: GetMatchesByPlayerService,
           useValue: {
             execute: jest.fn().mockResolvedValue([]),
           },
@@ -120,8 +121,8 @@ describe('MatchController', () => {
     editMatchService = module.get<EditMatchService>(EditMatchService);
     getAllMatchesService =
       module.get<GetAllMatchesService>(GetAllMatchesService);
-    getPlayerMatchesService = module.get<GetPlayerMatchesService>(
-      GetPlayerMatchesService,
+    getPlayerMatchesService = module.get<GetMatchesByPlayerService>(
+      GetMatchesByPlayerService,
     );
     requestToPlayService = module.get<RequestToPlayMatchService>(
       RequestToPlayMatchService,
@@ -143,14 +144,14 @@ describe('MatchController', () => {
     await app.close();
   });
 
-  it('should create a new match', async () => {
+  it('deve criar uma nova partida', async () => {
     const command = new CreateMatchCommand();
     command.dateGame = '2024-10-15T18:00:00Z';
     command.location = 'Test Location';
     command.availableSpots = 10;
 
     const response = await request(app.getHttpServer())
-      .post('/matches')
+      .post('/partidas')
       .set('Authorization', `Bearer ${token}`)
       .send(command)
       .expect(201);
@@ -159,7 +160,7 @@ describe('MatchController', () => {
     expect(createMatchService.execute).toHaveBeenCalledWith(command);
   });
 
-  it('should edit an existing match', async () => {
+  it('deve editar uma partida existente', async () => {
     const matchId = 'match-id-1';
     const command: Partial<EditMatchCommand> = {
       location: 'Updated Location',
@@ -167,7 +168,7 @@ describe('MatchController', () => {
     };
 
     await request(app.getHttpServer())
-      .put(`/matches/${matchId}`)
+      .put(`/partidas/${matchId}`)
       .set('Authorization', `Bearer ${token}`)
       .send(command)
       .expect(200);
@@ -175,21 +176,21 @@ describe('MatchController', () => {
     expect(editMatchService.execute).toHaveBeenCalledWith(matchId, command);
   });
 
-  it('should get all matches', async () => {
+  it('deve obter todas as partidas', async () => {
     await request(app.getHttpServer())
-      .get('/matches')
+      .get('/partidas')
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     expect(getAllMatchesService.execute).toHaveBeenCalled();
   });
 
-  it('should get player matches', async () => {
+  it('deve obter as partidas do jogador', async () => {
     const playerId = 'player-id-1';
     const status = STATUS_MATCH.A_REALIZAR;
 
     await request(app.getHttpServer())
-      .get(`/matches/player/${playerId}`)
+      .get(`/partidas/jogador/${playerId}`)
       .query({ status })
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
@@ -200,65 +201,69 @@ describe('MatchController', () => {
     });
   });
 
-  it('should request to play a match', async () => {
+  it('deve solicitar para jogar uma partida', async () => {
     const matchId = 'match-id-1';
     const playerId = 'player-id-1';
 
     await request(app.getHttpServer())
-      .post(`/matches/${matchId}/request-to-play`)
+      .post(`/partidas/${matchId}/solicitar-para-jogar`)
       .set('Authorization', `Bearer ${token}`)
       .send({ playerId })
       .expect(201);
 
     expect(requestToPlayService.execute).toHaveBeenCalledWith(
-      expect.any(ConfirmMatchCommand),
+      expect.objectContaining({
+        matchId: matchId,
+        playerId,
+      }),
     );
   });
 
-  it('should confirm a player for a match', async () => {
+  it('deve confirmar um jogador para uma partida', async () => {
     const matchId = 'match-id-1';
     const playerId = 'player-id-1';
 
     await request(app.getHttpServer())
-      .post(`/matches/${matchId}/confirm`)
+      .post(`/partidas/${matchId}/confirmar-jogador`)
       .set('Authorization', `Bearer ${token}`)
       .send({ playerId })
       .expect(201);
 
     expect(confirmMatchService.execute).toHaveBeenCalledWith(
-      expect.any(ConfirmMatchCommand),
+      expect.objectContaining({
+        matchId: matchId,
+        playerId,
+      }),
     );
   });
 
-  it('should cancel a match', async () => {
+  it('deve cancelar uma partida', async () => {
     const matchId = 'match-id-1';
-    const playerId = 'player-id-1';
 
     await request(app.getHttpServer())
-      .delete(`/matches/${matchId}`)
+      .delete(`/partidas/${matchId}`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ playerId })
       .expect(200);
 
-    expect(cancelMatchService.execute).toHaveBeenCalledWith(matchId, playerId);
+    expect(cancelMatchService.execute).toHaveBeenCalledWith(matchId);
   });
 
   it('should list pending requests for a match', async () => {
     const matchId = 'match-id-1';
 
     await request(app.getHttpServer())
-      .get(`/matches/${matchId}/pending-requests`)
+      .get(`/partidas/${matchId}/solicitacoes`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     expect(listPendingRequestsService.execute).toHaveBeenCalledWith(matchId);
   });
 
-  it('should get all players of a match', async () => {
+  it('deve listar solicitações pendentes para uma partida', async () => {
     const matchId = 'match-id-1';
 
     await request(app.getHttpServer())
-      .get(`/matches/${matchId}/players`)
+      .get(`/partidas/${matchId}/jogadores`)
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 

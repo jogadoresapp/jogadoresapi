@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -18,7 +19,17 @@ async function bootstrap() {
     .setTitle('Jogadores API')
     .setDescription('Jogadores API')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'JWT Authorization header',
+        in: 'header',
+      },
+      'JWT',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

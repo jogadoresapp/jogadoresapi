@@ -5,10 +5,27 @@ import { MatchRepository } from './match.repository';
 import { Match } from '../../domain/entities/match.entity';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { CreateMatchCommand } from '../../application/commands/create-match.command';
+import { EditMatchCommand } from '../../application/commands/edit-match.command';
 
 describe('MatchRepository', () => {
   let matchRepository: MatchRepository;
   let repository: Repository<Match>;
+  let match: Match;
+  const playerId = 'player-id-1';
+  const command: CreateMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    playerId,
+    location: 'Test Location',
+    teamLevel: TEAM_LEVEL.INICIANTE,
+    availableSpots: 10,
+  };
+
+  const commandEdit: EditMatchCommand = {
+    dateGame: '2024-10-15T18:00:00Z',
+    location: 'New Location',
+    availableSpots: 10,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,28 +40,19 @@ describe('MatchRepository', () => {
 
     matchRepository = module.get<MatchRepository>(MatchRepository);
     repository = module.get<Repository<Match>>(getRepositoryToken(Match));
+    match = Match.newMatch(command);
+    match.setId('1');
   });
 
   describe('findById', () => {
-    it('should return a match when found', async () => {
-      const id = '1';
-      const match = new Match(
-        '1',
-        '2024-10-15T18:00:00Z',
-        '123e4567-e89b-12d3-a456-426614174000',
-        'Estrela da Vila Baummer',
-        TEAM_LEVEL.AVANCADO,
-        10,
-        STATUS_MATCH.A_REALIZAR,
-      );
-      match.id = id;
+    it('deve retornar uma partida quando encontrada', async () => {
       jest.spyOn(repository, 'findOne').mockResolvedValue(match);
 
-      const result = await matchRepository.findById(id);
+      const result = await matchRepository.findById(playerId);
       expect(result).toEqual(match);
     });
 
-    it('should return null when no match is found', async () => {
+    it('deve retornar nulo quando nenhuma partida for encontrada', async () => {
       const id = '1';
       jest.spyOn(repository, 'findOne').mockResolvedValue(null);
 
@@ -52,16 +60,7 @@ describe('MatchRepository', () => {
       expect(result).toBeNull();
     });
     describe('save', () => {
-      it('should save and return the match', async () => {
-        const match = new Match(
-          '1',
-          '2024-10-15T18:00:00Z',
-          '123e4567-e89b-12d3-a456-426614174000',
-          'Estrela da Vila Baummer',
-          TEAM_LEVEL.AVANCADO,
-          10,
-          STATUS_MATCH.A_REALIZAR,
-        );
+      it('deve salvar e retornar a partida', async () => {
         jest.spyOn(repository, 'save').mockResolvedValue(match);
 
         const result = await matchRepository.save(match);
@@ -70,19 +69,9 @@ describe('MatchRepository', () => {
     });
 
     describe('findAllByStatus', () => {
-      it('should return matches with the given status', async () => {
+      it('deve retornar as partidas com o status fornecido', async () => {
         const status = STATUS_MATCH.A_REALIZAR;
-        const matches = [
-          new Match(
-            '1',
-            '2024-10-15T18:00:00Z',
-            '123e4567-e89b-12d3-a456-426614174000',
-            'Estrela da Vila Baummer',
-            TEAM_LEVEL.AVANCADO,
-            10,
-            STATUS_MATCH.A_REALIZAR,
-          ),
-        ];
+        const matches = [Match.newMatch(command)];
         jest.spyOn(repository, 'find').mockResolvedValue(matches);
 
         const result = await matchRepository.findAllByStatus(status);
@@ -91,45 +80,26 @@ describe('MatchRepository', () => {
     });
 
     describe('findAllById', () => {
-      it('should return matches with the given ids', async () => {
+      it('deve retornar as partidas com os IDs fornecidos', async () => {
         const ids = ['1'];
-        const matches = [
-          new Match(
-            '1',
-            '2024-10-15T18:00:00Z',
-            '123e4567-e89b-12d3-a456-426614174000',
-            'Estrela da Vila Baummer',
-            TEAM_LEVEL.AVANCADO,
-            10,
-            STATUS_MATCH.A_REALIZAR,
-          ),
-        ];
-        jest.spyOn(repository, 'findByIds').mockResolvedValue(matches);
+
+        jest.spyOn(repository, 'findByIds').mockResolvedValue([match]);
 
         const result = await matchRepository.findAllById(ids);
-        expect(result).toEqual(matches);
+        expect(result).toEqual([match]);
       });
     });
 
     describe('update', () => {
-      it('should update and return the match', async () => {
-        const id = '1';
-        const match = new Match(
-          '1',
-          '2024-10-15T18:00:00Z',
-          '123e4567-e89b-12d3-a456-426614174000',
-          'Estrela da Vila Baummer',
-          TEAM_LEVEL.AVANCADO,
-          10,
-          STATUS_MATCH.A_REALIZAR,
-        );
-        const updatedMatch = { ...match, status: STATUS_MATCH.CONFIRMADA };
-        jest.spyOn(repository, 'update').mockResolvedValue(undefined);
-        jest.spyOn(repository, 'findOne').mockResolvedValue(updatedMatch);
+      it('deve atualizar e retornar a partida', async () => {
+        const updatedMatch = match.updateMatch(commandEdit);
 
-        const result = await matchRepository.update(id, {
-          status: STATUS_MATCH.CONFIRMADA,
-        });
+        jest.spyOn(repository, 'update').mockResolvedValue(undefined);
+        jest
+          .spyOn(repository, 'findOne')
+          .mockResolvedValue(updatedMatch as any);
+
+        const result = await matchRepository.update(match.getId(), {});
         expect(result).toEqual(updatedMatch);
       });
     });
