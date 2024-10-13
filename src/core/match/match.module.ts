@@ -14,6 +14,7 @@ import { GetPlayersFromMatchService } from './application/services/get-players-f
 import { LeaveMatchService } from './application/services/leave-match.service';
 import { MatchPlayersRepository } from './infrastructure/repositories/match-players.repository';
 import { MatchPlayers } from './domain/entities/match-player.entity';
+import { GetMatchesFromPlayerhService } from './application/services/get-matches-from-player.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Match, MatchPlayers]), PlayerModule],
@@ -27,6 +28,7 @@ import { MatchPlayers } from './domain/entities/match-player.entity';
     CancelMatchService,
     EditMatchService,
     GetPlayersFromMatchService,
+    GetMatchesFromPlayerhService,
     MatchRepository,
     MatchPlayersRepository,
   ],

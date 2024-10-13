@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { MatchPlayers } from '../../domain/entities/match-player.entity';
 import { Player } from 'src/core/player/domain/entitites/player.entity';
+import { Match } from '../../domain/entities/match.entity';
 
 @Injectable()
 export class MatchPlayersRepository {
@@ -42,5 +43,19 @@ export class MatchPlayersRepository {
     const players = await this.dataSource.query(query, [matchId]);
 
     return players;
+  }
+
+  async getMatchesFromPlayer(playerId: string): Promise<Match[]> {
+    const query = `
+    SELECT 
+      m.*
+    FROM match m
+    JOIN match_players mp ON m.id = mp.match_id
+    WHERE mp.player_id = $1
+  `;
+
+    const matches = await this.dataSource.query(query, [playerId]);
+
+    return matches;
   }
 }

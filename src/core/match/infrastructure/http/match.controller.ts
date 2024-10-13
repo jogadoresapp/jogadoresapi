@@ -31,6 +31,8 @@ import { LeaveMatchService } from '../../application/services/leave-match.servic
 import { MatchCommand } from '../../application/commands/match.command';
 import { Player } from 'src/core/player/domain/entitites/player.entity';
 import { GetPlayersFromMatchService } from '../../application/services/get-players-from-match.service';
+import { GetMatchesFromPlayerhService } from '../../application/services/get-matches-from-player.service';
+import { Match } from '../../domain/entities/match.entity';
 
 @ApiTags('Partidas')
 @Controller('partidas')
@@ -44,6 +46,7 @@ export class MatchController {
     private readonly getMatchByIdService: GetMatchByIdService,
     private readonly cancelMatchService: CancelMatchService,
     private readonly getPlayersFromMatchService: GetPlayersFromMatchService,
+    private readonly getMatchesFromPlayerhService: GetMatchesFromPlayerhService,
   ) {}
 
   @Post()
@@ -141,8 +144,8 @@ export class MatchController {
   @ApiParam({ name: 'playerId', description: 'Jogador ID' })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER_SUCCESS)
   async getMatchesFromPlayers(
-    @Param('playerId') matchId: string,
-  ): Promise<Player[]> {
-    return this.getPlayersFromMatchService.execute(matchId);
+    @Param('playerId') playerId: string,
+  ): Promise<Match[]> {
+    return this.getMatchesFromPlayerhService.execute(playerId);
   }
 }
