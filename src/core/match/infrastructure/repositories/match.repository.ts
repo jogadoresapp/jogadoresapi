@@ -1,16 +1,14 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Match } from '../../domain/entities/match.entity';
 import { GetAllMatchesCommand } from '../../application/commands/get-all-matches.command';
-import { Player } from '../../../player/domain/entitites/player.entity';
 
 Injectable();
 export class MatchRepository {
   constructor(
     @InjectRepository(Match)
     private readonly repository: Repository<Match>,
-    private readonly dataSource: DataSource,
   ) {}
 
   async save(match: Match): Promise<Match> {
@@ -29,28 +27,40 @@ export class MatchRepository {
   async findAllByFilters(filters: GetAllMatchesCommand): Promise<Match[]> {
     const queryBuilder = this.repository.createQueryBuilder('match');
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) {
-        queryBuilder.andWhere(`match.${key} = :${key}`, { [key]: value });
-      }
-    });
+    if (filters.status) {
+      queryBuilder.andWhere('match.status = :status', {
+        status: filters.status,
+      });
+    }
+
+    // if (filters.date) {
+    //   queryBuilder.andWhere('match.date = :date', { date: filters.date });
+    // }
+
+    if (filters.sport) {
+      queryBuilder.andWhere('match.sport = :sport', { sport: filters.sport });
+    }
+
+    if (filters.teamLevel) {
+      queryBuilder.andWhere('match.team_level = :teamLevel', {
+        teamLevel: filters.teamLevel,
+      });
+    }
+
+    if (filters.city) {
+      queryBuilder.andWhere('match.city = :city', { city: filters.city });
+    }
+
+    if (filters.state) {
+      queryBuilder.andWhere('match.state = :state', { state: filters.state });
+    }
+
+    if (filters.playerId) {
+      queryBuilder.andWhere('match.player_id = :playerId', {
+        playerId: filters.playerId,
+      });
+    }
 
     return queryBuilder.getMany();
-  }
-
-  async getPlayersFromMatch(matchId: string): Promise<Player[]> {
-    console.log(matchId);
-    const query = `
-      SELECT 
-      p.id,
-      p.name
-      FROM players p
-      LEFT JOIN match_players mp ON p.id = mp.player_id
-      WHERE mp.match_id = $1
-    `;
-
-    const players = await this.dataSource.query(query, [matchId]);
-
-    return players;
   }
 }

@@ -6,6 +6,7 @@ import { MatchCommand } from '../commands/match.command';
 import { validateExistence } from '../../../../common/helpers/validation.helper';
 import { validateMatch } from '../../../../common/validators/match.validators';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
+import { MatchPlayers } from '../../domain/entities/match-player.entity';
 
 @Injectable()
 export class JoinMatchService implements MatchUseCase {
@@ -25,7 +26,12 @@ export class JoinMatchService implements MatchUseCase {
       throw new BadRequestException('Partida já está cheia');
     }
 
-    match.addPlayer(command.playerId);
+    const matchPlayer = MatchPlayers.create(
+      match.getId(),
+      command.playerId as any,
+    );
+
+    this.matchPlayerRepository.save(matchPlayer);
 
     match.minusOneSpot();
 

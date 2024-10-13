@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { SPORTS } from 'src/common/enums/sports.enum';
-import { Player } from 'src/core/player/domain/entitites/player.entity';
 
 @Entity()
 export class Match {
@@ -21,7 +20,7 @@ export class Match {
   @Column({ type: 'timestamptz', nullable: false })
   private date: Date;
 
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: 'uuid', nullable: false, name: 'player_id' })
   private playerId: string;
 
   @Column({ type: 'varchar', nullable: false })
@@ -36,32 +35,26 @@ export class Match {
   @Column({
     type: 'enum',
     enum: TEAM_LEVEL,
+    name: 'team_level',
   })
   private teamLevel: TEAM_LEVEL;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: false, name: 'available_spots' })
   private availableSpots: number;
 
-  @Column({ type: 'enum', enum: STATUS_MATCH, nullable: false })
+  @Column({ type: 'enum', enum: STATUS_MATCH, nullable: false, name: 'status' })
   private status: STATUS_MATCH;
 
   @Column({ type: 'enum', enum: SPORTS, nullable: false })
   private sport: SPORTS;
 
-  @Column({
-    type: 'simple-array',
-    array: false,
-    nullable: true,
-  })
-  private players: Pick<Player, 'id'>[];
-
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   private createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   private updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: 'deleted_at' })
   private deletedAt: Date;
 
   private constructor(
@@ -154,10 +147,6 @@ export class Match {
     return this.sport;
   }
 
-  getPlayers(): Pick<Player, 'id'>[] {
-    return this.players;
-  }
-
   setId(id: string): void {
     this.id = id;
   }
@@ -180,19 +169,5 @@ export class Match {
 
   setSport(sport: SPORTS): void {
     this.sport = sport;
-  }
-
-  addPlayer(player: Pick<Player, 'id'>) {
-    this.players.push(player);
-    this.plusOneSpot();
-  }
-
-  removePlayer(playerId: Pick<Player, 'id'>) {
-    this.players = this.players.filter((player) => player.id !== playerId.id);
-    this.minusOneSpot();
-  }
-
-  isPlayerInMatch(playerId: Pick<Player, 'id'>): boolean {
-    return this.players.some((player) => player.id === playerId.id);
   }
 }

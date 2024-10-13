@@ -16,12 +16,10 @@ import {
   ApiResponse,
   ApiTags,
   ApiParam,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { EditMatchService } from '../../application/services/edit-match.service';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { GetAllMatchesService } from '../../application/services/get-all-matches.service';
-import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { JoinMatchService } from '../../application/services/join-match.service';
 import { CancelMatchService } from '../../application/services/cancel-match.service';
 import { ApiCustomResponses } from '../../../../common/decorators/swagger/response.decorator';
@@ -79,11 +77,6 @@ export class MatchController {
 
   @Get()
   @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES })
-  @ApiQuery({
-    name: 'status',
-    enum: STATUS_MATCH,
-    description: MATCH_MESSAGES.FILTER_MATCH_BY_STATUS,
-  })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_ALL_MATCHES)
   async getAllMatches(@Query() filters: GetAllMatchesCommand) {
     return this.getAllMatchesService.execute(filters);
@@ -91,7 +84,7 @@ export class MatchController {
 
   @Post(':matchId/entrar-na-partida')
   @ApiOperation({ summary: MATCH_MESSAGES.CONFIRM_MATCH })
-  @ApiParam({ name: 'id', description: 'Partida ID' })
+  @ApiParam({ name: 'matchId', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
   async joinMatch(
@@ -105,7 +98,7 @@ export class MatchController {
 
   @Post(':matchId/sair-da-partida')
   @ApiOperation({ summary: MATCH_MESSAGES.CONFIRM_MATCH })
-  @ApiParam({ name: 'id', description: 'Partida ID' })
+  @ApiParam({ name: 'matchId', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
   async leaveMatch(
@@ -140,6 +133,16 @@ export class MatchController {
   @ApiParam({ name: 'matchId', description: 'Partida ID' })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER_SUCCESS)
   async getMatchPlayers(@Param('matchId') matchId: string): Promise<Player[]> {
+    return this.getPlayersFromMatchService.execute(matchId);
+  }
+
+  @Get(':playerId/partidas')
+  @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES_PLAYER })
+  @ApiParam({ name: 'playerId', description: 'Jogador ID' })
+  @ApiCustomResponses(MATCH_MESSAGES.LIST_MATCHES_PLAYER_SUCCESS)
+  async getMatchesFromPlayers(
+    @Param('playerId') matchId: string,
+  ): Promise<Player[]> {
     return this.getPlayersFromMatchService.execute(matchId);
   }
 }

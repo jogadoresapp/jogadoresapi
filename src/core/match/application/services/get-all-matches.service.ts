@@ -9,6 +9,7 @@ export class GetAllMatchesService implements GetAllMatchesUseCase {
   constructor(private readonly matchRepository: MatchRepository) {}
 
   async execute(query: GetAllMatchesCommand): Promise<Match[]> {
+    console.log(query);
     return this.matchRepository.findAllByFilters(query);
   }
 }

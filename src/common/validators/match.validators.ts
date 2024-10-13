@@ -37,9 +37,7 @@ export function validatePlayerInMatch(
   matchPlayers: any,
   playerId: Pick<Player, 'id'>,
 ): void {
-  if (matchPlayers.isPlayerInMatch(playerId)) {
-    throw new BadRequestException('O jogador já está na partida');
-  }
+  console.log(matchPlayers, playerId);
 }
 
 /**
