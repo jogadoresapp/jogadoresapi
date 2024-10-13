@@ -1,22 +1,37 @@
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
 import { STATUS_MATCH } from '../../../..//common/enums/status-match.enum';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
+import { SPORTS } from 'src/common/enums/sports.enum';
+import { Player } from 'src/core/player/domain/entitites/player.entity';
 
 @Entity()
 export class Match {
   @PrimaryGeneratedColumn('uuid')
   private id: string;
 
-  @Column()
-  private dateGame: string;
+  @Column({ type: 'timestamptz', nullable: false })
+  private date: Date;
 
-  @Column()
+  @Column({ type: 'uuid', nullable: false })
   private playerId: string;
 
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   private location: string;
+
+  @Column({ type: 'varchar', nullable: false })
+  private city: string;
+
+  @Column({ type: 'varchar', nullable: false })
+  private state: string;
 
   @Column({
     type: 'enum',
@@ -24,39 +39,67 @@ export class Match {
   })
   private teamLevel: TEAM_LEVEL;
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   private availableSpots: number;
 
-  @Column()
+  @Column({ type: 'enum', enum: STATUS_MATCH, nullable: false })
   private status: STATUS_MATCH;
+
+  @Column({ type: 'enum', enum: SPORTS, nullable: false })
+  private sport: SPORTS;
+
+  @Column({
+    type: 'simple-array',
+    array: false,
+    nullable: true,
+  })
+  private players: Pick<Player, 'id'>[];
+
+  @CreateDateColumn()
+  private createdAt: Date;
+
+  @UpdateDateColumn()
+  private updatedAt: Date;
+
+  @DeleteDateColumn()
+  private deletedAt: Date;
 
   private constructor(
     id: string,
-    dateGame: string,
+    date: Date,
     playerId: string,
     location: string,
     teamLevel: TEAM_LEVEL,
     availableSpots: number,
+    sport: SPORTS,
     status: STATUS_MATCH,
+    city: string,
+    state: string,
   ) {
     this.id = id;
-    this.dateGame = dateGame;
+    this.date = date;
     this.playerId = playerId;
     this.location = location;
     this.teamLevel = teamLevel;
     this.availableSpots = availableSpots;
+    this.sport = sport;
     this.status = status;
+    this.city = city;
+    this.state = state;
   }
 
   static newMatch(command: CreateMatchCommand): Match {
     return new Match(
       undefined,
-      command.dateGame,
+      command.date,
       command.playerId,
       command.location,
       command.teamLevel,
       command.availableSpots,
+      SPORTS.FUTEBOL,
       STATUS_MATCH.A_REALIZAR,
+      command.city,
+      command.state,
     );
   }
 
@@ -67,12 +110,24 @@ export class Match {
       this.setAvailableSpots(command.availableSpots);
   }
 
+  cancelMatch(): void {
+    this.setStatus(STATUS_MATCH.CANCELADA);
+  }
+
+  plusOneSpot(): void {
+    this.availableSpots++;
+  }
+
+  minusOneSpot(): void {
+    this.availableSpots--;
+  }
+
   getId(): string {
     return this.id;
   }
 
-  getDateGame(): string {
-    return this.dateGame;
+  getDateGame(): Date {
+    return this.date;
   }
 
   getPlayerId(): string {
@@ -95,12 +150,20 @@ export class Match {
     return this.status;
   }
 
+  getSports(): SPORTS {
+    return this.sport;
+  }
+
+  getPlayers(): Pick<Player, 'id'>[] {
+    return this.players;
+  }
+
   setId(id: string): void {
     this.id = id;
   }
 
-  setDateGame(dateGame: string): void {
-    this.dateGame = dateGame;
+  setDateGame(dateGame: Date): void {
+    this.date = dateGame;
   }
 
   setLocation(location: string): void {
@@ -108,10 +171,28 @@ export class Match {
   }
 
   setAvailableSpots(availableSpots: number): void {
-    this.availableSpots = availableSpots; // Manter lógica para evitar valores negativos, se necessário
+    this.availableSpots = availableSpots;
   }
 
   setStatus(status: STATUS_MATCH): void {
     this.status = status;
+  }
+
+  setSport(sport: SPORTS): void {
+    this.sport = sport;
+  }
+
+  addPlayer(player: Pick<Player, 'id'>) {
+    this.players.push(player);
+    this.plusOneSpot();
+  }
+
+  removePlayer(playerId: Pick<Player, 'id'>) {
+    this.players = this.players.filter((player) => player.id !== playerId.id);
+    this.minusOneSpot();
+  }
+
+  isPlayerInMatch(playerId: Pick<Player, 'id'>): boolean {
+    return this.players.some((player) => player.id === playerId.id);
   }
 }

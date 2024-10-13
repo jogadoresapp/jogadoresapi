@@ -10,26 +10,15 @@ export class MatchPlayersRepository {
     private readonly repository: Repository<MatchPlayers>,
   ) {}
 
-  async findByMatchId(matchId: string): Promise<MatchPlayers> {
-    const matchPlayers = await this.repository.findOne({ where: { matchId } });
-    if (!matchPlayers) {
-      return new MatchPlayers(matchId);
-    }
-    return matchPlayers;
-  }
-
   async save(matchPlayers: MatchPlayers): Promise<MatchPlayers> {
     return this.repository.save(matchPlayers);
   }
 
-  async findByPlayerId(playerId: string): Promise<string[]> {
-    const matchPlayers = await this.repository.find();
-    return matchPlayers
-      .filter(
-        (mp) =>
-          mp.players.includes(playerId) ||
-          mp.pendingRequests.includes(playerId),
-      )
-      .map((mp) => mp.matchId);
+  async findById(matchId: string): Promise<MatchPlayers | null> {
+    return this.repository.findOne({ where: { matchId } as any });
+  }
+
+  async findByPlayerId(playerId: string): Promise<MatchPlayers | null> {
+    return this.repository.findOne({ where: { playerId } as any });
   }
 }

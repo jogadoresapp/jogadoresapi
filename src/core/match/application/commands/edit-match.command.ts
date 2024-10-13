@@ -16,7 +16,7 @@ export class EditMatchCommand {
   })
   @IsOptional()
   @IsDateString()
-  public dateGame?: string;
+  public dateGame?: Date;
 
   @ApiPropertyOptional({
     description: 'Novo lugar da partida',

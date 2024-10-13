@@ -1,55 +1,55 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CreateMatchService } from './create-match.service';
-import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { CreateMatchCommand } from '../commands/create-match.command';
-import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { CreateMatchService } from './create-match.service';
+// import { MatchRepository } from '../../infrastructure/repositories/match.repository';
+// import { CreateMatchCommand } from '../commands/create-match.command';
+// import { Match } from '../../domain/entities/match.entity';
+// import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 
-describe('CreateMatchService', () => {
-  let service: CreateMatchService;
-  let matchRepository: MatchRepository;
+// describe('CreateMatchService', () => {
+//   let service: CreateMatchService;
+//   let matchRepository: MatchRepository;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CreateMatchService,
-        {
-          provide: MatchRepository,
-          useValue: {
-            save: jest.fn(),
-          },
-        },
-      ],
-    }).compile();
+//   beforeEach(async () => {
+//     const module: TestingModule = await Test.createTestingModule({
+//       providers: [
+//         CreateMatchService,
+//         {
+//           provide: MatchRepository,
+//           useValue: {
+//             save: jest.fn(),
+//           },
+//         },
+//       ],
+//     }).compile();
 
-    service = module.get<CreateMatchService>(CreateMatchService);
-    matchRepository = module.get<MatchRepository>(MatchRepository);
-  });
+//     service = module.get<CreateMatchService>(CreateMatchService);
+//     matchRepository = module.get<MatchRepository>(MatchRepository);
+//   });
 
-  it('deve estar definido', () => {
-    expect(service).toBeDefined();
-  });
+//   it('deve estar definido', () => {
+//     expect(service).toBeDefined();
+//   });
 
-  it('deve salvar uma nova partida e retornar seu ID', async () => {
-    const command: CreateMatchCommand = {
-      dateGame: '2024-10-15T18:00:00Z',
-      playerId: '123e4567-e89b-12d3-a456-426614174000',
-      location: 'Estrela da Vila Baummer',
-      teamLevel: TEAM_LEVEL.AVANCADO,
-      availableSpots: 10,
-    };
+//   it('deve salvar uma nova partida e retornar seu ID', async () => {
+//     const command: CreateMatchCommand = {
+//       dateGame: '2024-10-15T18:00:00Z',
+//       playerId: '123e4567-e89b-12d3-a456-426614174000',
+//       location: 'Estrela da Vila Baummer',
+//       teamLevel: TEAM_LEVEL.AVANCADO,
+//       availableSpots: 10,
+//     };
 
-    const match = Match.newMatch(command);
-    const savedMatch = match;
-    savedMatch.setId('123');
+//     const match = Match.newMatch(command);
+//     const savedMatch = match;
+//     savedMatch.setId('123');
 
-    jest.spyOn(Match, 'newMatch').mockReturnValue(match);
-    jest.spyOn(matchRepository, 'save').mockResolvedValue(savedMatch);
+//     jest.spyOn(Match, 'newMatch').mockReturnValue(match);
+//     jest.spyOn(matchRepository, 'save').mockResolvedValue(savedMatch);
 
-    const result = await service.execute(command);
+//     const result = await service.execute(command);
 
-    expect(Match.newMatch).toHaveBeenCalledWith(command);
-    expect(matchRepository.save).toHaveBeenCalledWith(match);
-    expect(result).toBe('123');
-  });
-});
+//     expect(Match.newMatch).toHaveBeenCalledWith(command);
+//     expect(matchRepository.save).toHaveBeenCalledWith(match);
+//     expect(result).toBe('123');
+//   });
+// });

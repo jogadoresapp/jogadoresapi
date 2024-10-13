@@ -3,45 +3,32 @@ import { Entity, Column, PrimaryColumn } from 'typeorm';
 @Entity()
 export class MatchPlayers {
   @PrimaryColumn()
-  matchId: string;
+  private matchId: string;
 
-  @Column('simple-array')
-  players: string[];
-
-  @Column('simple-array')
-  pendingRequests: string[];
+  @Column()
+  private playerId: string;
 
   constructor(matchId: string) {
     this.matchId = matchId;
-    this.players = [];
-    this.pendingRequests = [];
   }
 
-  addPlayer(playerId: string) {
-    if (!this.players.includes(playerId)) {
-      this.players.push(playerId);
-    }
+  static create(matchId: string): MatchPlayers {
+    return new MatchPlayers(matchId);
   }
 
-  removePlayer(playerId: string) {
-    this.players = this.players.filter((id) => id !== playerId);
+  getMatchId(): string {
+    return this.matchId;
   }
 
-  addPendingRequest(playerId: string) {
-    if (!this.pendingRequests.includes(playerId)) {
-      this.pendingRequests.push(playerId);
-    }
+  getPlayerId(): string {
+    return this.playerId;
   }
 
-  removePendingRequest(playerId: string) {
-    this.pendingRequests = this.pendingRequests.filter((id) => id !== playerId);
+  setMatchId(matchId: string) {
+    this.matchId = matchId;
   }
 
-  isPlayerInMatch(playerId: string): boolean {
-    return this.players.includes(playerId);
-  }
-
-  hasRequestedToPlay(playerId: string): boolean {
-    return this.pendingRequests.includes(playerId);
+  setPlayerId(playerId: string) {
+    this.playerId = playerId;
   }
 }

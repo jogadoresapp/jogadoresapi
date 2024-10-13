@@ -18,10 +18,6 @@ export class PlayerRepository {
     return this.repository.findOne({ where: { id } });
   }
 
-  async findAllByIds(ids: string[]): Promise<Player[]> {
-    return this.repository.findByIds(ids);
-  }
-
   async findByEmail(email: string): Promise<Player | null> {
     return this.repository.findOne({ where: { email } });
   }
