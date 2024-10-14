@@ -1,4 +1,4 @@
-# Sistema de Gerenciamento de Partidas de Futebol
+# Sistema de criação de partidas esportivas
 
 ## Core do Negócio
 
