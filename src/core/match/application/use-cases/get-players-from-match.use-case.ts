@@ -1,5 +1,5 @@
 import { Player } from '../../../player/domain/entitites/player.entity';
 
-export interface GetMatchPlayesUseCase {
+export interface GetPlayersFromMatchUseCase {
   execute(matchId: string): Promise<Player[]>;
 }

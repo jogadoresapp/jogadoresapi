@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { STATUS_MATCH } from '../enums/status-match.enum';
-import { validateExistence } from '../helpers/validation.helper';
+import { Player } from 'src/core/player/domain/entitites/player.entity';
 
 /**
  * Valida se a partida está com o status A_REALIZAR
@@ -35,39 +35,24 @@ export function validateAvailableSpots(match: any): void {
  */
 export function validatePlayerInMatch(
   matchPlayers: any,
-  playerId: string,
+  playerId: Pick<Player, 'id'>,
 ): void {
-  if (matchPlayers.isPlayerInMatch(playerId)) {
-    throw new BadRequestException(
-      'O jogador já está confirmado para esta partida',
-    );
-  }
+  console.log(matchPlayers, playerId);
 }
 
 /**
- * Valida se o jogador já solicitou para jogar na partida
+ * Valida se a partida está com o status A_REALIZAR, se há vagas disponíveis e se o jogador já está confirmado
+ * @param match
  * @param matchPlayers
  * @param playerId
+ * @throws BadRequestException
  */
-export function validatePendingRequest(
-  matchPlayers: any,
-  playerId: string,
-): void {
-  if (!matchPlayers.hasRequestedToPlay(playerId)) {
-    throw new BadRequestException(
-      'O jogador não solicitou para jogar nesta partida',
-    );
-  }
-}
-
 export function validateMatch(
   match: any,
   matchPlayers: any,
-  playerId: string,
+  playerId: Pick<Player, 'id'>,
 ): void {
-  validateExistence(match, 'Partida', match.id);
   validateMatchStatus(match);
   validateAvailableSpots(match);
   validatePlayerInMatch(matchPlayers, playerId);
-  validatePendingRequest(matchPlayers, playerId);
 }

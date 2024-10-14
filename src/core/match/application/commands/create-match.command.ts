@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEnum, IsInt, Min, IsDateString } from 'class-validator';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
 export class CreateMatchCommand {
   @ApiProperty({
@@ -8,7 +9,7 @@ export class CreateMatchCommand {
     example: '2024-10-15T18:00:00Z',
   })
   @IsDateString()
-  public dateGame: string;
+  public date: Date;
 
   @ApiProperty({
     description: 'O ID do jogador que está criando a partida',
@@ -39,4 +40,26 @@ export class CreateMatchCommand {
   @IsInt()
   @Min(1)
   public availableSpots: number;
+
+  @ApiProperty({
+    description: 'O esporte da partida',
+    enum: SPORTS,
+    example: SPORTS.FUTEBOL,
+  })
+  @IsEnum(SPORTS)
+  public sport: SPORTS;
+
+  @ApiProperty({
+    description: 'O estado onde a partida ocorrerá',
+    example: 'SP',
+  })
+  @IsString()
+  public state: string;
+
+  @ApiProperty({
+    description: 'A cidade onde a partida ocorrerá',
+    example: 'São Paulo',
+  })
+  @IsString()
+  public city: string;
 }

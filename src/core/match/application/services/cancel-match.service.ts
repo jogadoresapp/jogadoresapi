@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CancelMatchUseCase } from '../use-cases/cancel-match.use-case';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
@@ -13,18 +13,8 @@ export class CancelMatchService implements CancelMatchUseCase {
 
     validateExistence(match, 'Partida', id);
 
-    this.validateCancellation(match.getStatus());
-
     match.setStatus(STATUS_MATCH.CANCELADA);
     await this.matchRepository.update(id, match);
     return match.getId();
-  }
-
-  private validateCancellation(status: STATUS_MATCH): void {
-    if (status !== STATUS_MATCH.A_REALIZAR) {
-      throw new ForbiddenException(
-        'Apenas partidas com o status A_REALIZAR podem ser canceladas.',
-      );
-    }
   }
 }

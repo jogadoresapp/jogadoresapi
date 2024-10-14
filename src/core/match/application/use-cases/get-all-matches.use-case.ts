@@ -1,6 +1,6 @@
-import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { Match } from '../../domain/entities/match.entity';
+import { GetAllMatchesCommand } from '../commands/get-all-matches.command';
 
 export interface GetAllMatchesUseCase {
-  execute(status: STATUS_MATCH): Promise<Match[]>;
+  execute(query: GetAllMatchesCommand): Promise<Match[]>;
 }

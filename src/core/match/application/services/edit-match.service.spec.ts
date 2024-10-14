@@ -6,6 +6,7 @@ import { EditMatchCommand } from '../commands/edit-match.command';
 import { Match } from '../../domain/entities/match.entity';
 import { CreateMatchCommand } from '../commands/create-match.command';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
 describe('EditMatchService', () => {
   let service: EditMatchService;
@@ -13,18 +14,21 @@ describe('EditMatchService', () => {
   let match: Match;
 
   const matchId = 'existing-id';
+
   const command: EditMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
     location: 'New Location',
     availableSpots: 10,
   };
 
   const commandNew: CreateMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
+    date: new Date(),
     playerId: '123e4567-e89b-12d3-a456-426614174000',
     location: 'Estrela da Vila Baummer',
     teamLevel: TEAM_LEVEL.AVANCADO,
-    availableSpots: 8,
+    availableSpots: 10,
+    city: 'city',
+    state: 'state',
+    sport: SPORTS.FUTEBOL,
   };
 
   beforeEach(async () => {

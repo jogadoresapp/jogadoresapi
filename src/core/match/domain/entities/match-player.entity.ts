@@ -1,47 +1,54 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class MatchPlayers {
-  @PrimaryColumn()
-  matchId: string;
+  @PrimaryGeneratedColumn('uuid')
+  private id: string;
 
-  @Column('simple-array')
-  players: string[];
+  @Column({ type: 'uuid', name: 'match_id' })
+  private matchId: string;
 
-  @Column('simple-array')
-  pendingRequests: string[];
+  @Column({ type: 'uuid', name: 'player_id' })
+  private playerId: string;
 
-  constructor(matchId: string) {
+  @CreateDateColumn({ name: 'created_at' })
+  private createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  private updatedAt: Date;
+
+  @DeleteDateColumn({ name: 'deleted_at' })
+  private deletedAt: Date;
+
+  constructor(matchId: string, playerId: string) {
     this.matchId = matchId;
-    this.players = [];
-    this.pendingRequests = [];
+    this.playerId = playerId;
   }
 
-  addPlayer(playerId: string) {
-    if (!this.players.includes(playerId)) {
-      this.players.push(playerId);
-    }
+  static create(matchId: string, playerId: string): MatchPlayers {
+    return new MatchPlayers(matchId, playerId);
   }
 
-  removePlayer(playerId: string) {
-    this.players = this.players.filter((id) => id !== playerId);
+  getMatchId(): string {
+    return this.matchId;
   }
 
-  addPendingRequest(playerId: string) {
-    if (!this.pendingRequests.includes(playerId)) {
-      this.pendingRequests.push(playerId);
-    }
+  getPlayerId(): string {
+    return this.playerId;
   }
 
-  removePendingRequest(playerId: string) {
-    this.pendingRequests = this.pendingRequests.filter((id) => id !== playerId);
+  setMatchId(matchId: string) {
+    this.matchId = matchId;
   }
 
-  isPlayerInMatch(playerId: string): boolean {
-    return this.players.includes(playerId);
-  }
-
-  hasRequestedToPlay(playerId: string): boolean {
-    return this.pendingRequests.includes(playerId);
+  setPlayerId(playerId: string) {
+    this.playerId = playerId;
   }
 }

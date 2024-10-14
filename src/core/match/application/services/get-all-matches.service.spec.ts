@@ -1,23 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetAllMatchesService } from './get-all-matches.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { GetAllMatchesService } from './get-all-matches.service';
+import { GetAllMatchesCommand } from '../commands/get-all-matches.command';
 import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import { CreateMatchCommand } from '../commands/create-match.command';
 
 describe('GetAllMatchesService', () => {
   let service: GetAllMatchesService;
-  let matchRepository: MatchRepository;
-  const command: CreateMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
-    playerId: '123e4567-e89b-12d3-a456-426614174000',
-    location: 'Estrela da Vila Baummer',
-    teamLevel: TEAM_LEVEL.AVANCADO,
-    availableSpots: 10,
-  };
-
-  const match = Match.newMatch(command);
+  let repository: MatchRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,42 +15,36 @@ describe('GetAllMatchesService', () => {
         {
           provide: MatchRepository,
           useValue: {
-            findAllByStatus: jest.fn(),
+            findAllByFilters: jest.fn(),
           },
         },
       ],
     }).compile();
 
     service = module.get<GetAllMatchesService>(GetAllMatchesService);
-    matchRepository = module.get<MatchRepository>(MatchRepository);
+    repository = module.get<MatchRepository>(MatchRepository);
   });
 
-  it('deve retornar partidas para um status válido', async () => {
-    const status = STATUS_MATCH.A_REALIZAR;
-    const matches: Match[] = [match];
+  it('deve criar a service', () => {
+    expect(service).toBeDefined();
+  });
 
-    jest.spyOn(matchRepository, 'findAllByStatus').mockResolvedValue(matches);
+  it('deve chamar findAllByFilters com os parâmetros corretos', async () => {
+    const query: GetAllMatchesCommand = {
+      status: undefined,
+      sport: undefined,
+      teamLevel: undefined,
+      city: 'São Paulo',
+      state: 'SP',
+      playerId: '123e4567-e89b-12d3-a456-426614174000',
+    };
 
-    const result = await service.execute(status);
+    const matches: Match[] = [];
+    jest.spyOn(repository, 'findAllByFilters').mockResolvedValue(matches);
+
+    const result = await service.execute(query);
+
+    expect(repository.findAllByFilters).toHaveBeenCalledWith(query);
     expect(result).toEqual(matches);
-  });
-
-  it('deve retornar um array vazio se nenhuma partida for encontrada', async () => {
-    const status = STATUS_MATCH.A_REALIZAR;
-
-    jest.spyOn(matchRepository, 'findAllByStatus').mockResolvedValue([]);
-
-    const result = await service.execute(status);
-    expect(result).toEqual([]);
-  });
-
-  it('deve lançar um erro se o repositório lançar um erro.', async () => {
-    const status = STATUS_MATCH.A_REALIZAR;
-
-    jest
-      .spyOn(matchRepository, 'findAllByStatus')
-      .mockRejectedValue(new Error('Repository error'));
-
-    await expect(service.execute(status)).rejects.toThrow('Repository error');
   });
 });

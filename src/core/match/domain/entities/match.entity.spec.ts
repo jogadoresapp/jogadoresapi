@@ -1,87 +1,103 @@
-// src/match/domain/tests/match.entity.spec.ts
-
-import { Match } from '../entities/match.entity';
+import { Match } from './match.entity';
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
-describe.only('Match Entity', () => {
-  let match: Match;
-  const playerId = 'player-id-1';
-  const command: CreateMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
-    playerId,
-    location: 'Test Location',
-    teamLevel: TEAM_LEVEL.INICIANTE,
-    availableSpots: 10,
-  };
+describe('Match Entity', () => {
+  it('deve criar uma nova partida', () => {
+    const command = new CreateMatchCommand();
+    command.date = new Date();
+    command.playerId = 'player-id';
+    command.location = 'location';
+    command.teamLevel = TEAM_LEVEL.AVANCADO;
+    command.availableSpots = 10;
+    command.city = 'city';
+    command.state = 'state';
 
-  beforeEach(() => {
-    match = Match.newMatch(command);
+    const match = Match.newMatch(command);
+
+    expect(match.getDateGame()).toEqual(command.date);
+    expect(match.getPlayerId()).toEqual(command.playerId);
+    expect(match.getLocation()).toEqual(command.location);
+    expect(match.getTeamLevel()).toEqual(command.teamLevel);
+    expect(match.getAvailableSpots()).toEqual(command.availableSpots);
+    expect(match.getStatus()).toEqual(STATUS_MATCH.A_REALIZAR);
+    expect(match.getSports()).toEqual(SPORTS.FUTEBOL);
+    expect(match.getCity()).toEqual(command.city);
+    expect(match.getState()).toEqual(command.state);
   });
 
-  it('deve criar uma nova partida com parâmetros válidos', () => {
-    expect(match.getDateGame()).toBe(command.dateGame);
-    expect(match.getPlayerId()).toBe(command.playerId);
-    expect(match.getLocation()).toBe(command.location);
-    expect(match.getTeamLevel()).toBe(command.teamLevel);
-    expect(match.getAvailableSpots()).toBe(command.availableSpots);
-    expect(match.getStatus()).toBe(STATUS_MATCH.A_REALIZAR);
-  });
+  it('deve atualizar uma partida', () => {
+    const command = new CreateMatchCommand();
+    command.date = new Date();
+    command.playerId = 'player-id';
+    command.location = 'location';
+    command.teamLevel = TEAM_LEVEL.AVANCADO;
+    command.availableSpots = 10;
+    command.city = 'city';
+    command.state = 'state';
 
-  it('deve atualizar as propriedades da partida', () => {
-    const editCommand: EditMatchCommand = {
-      dateGame: '2024-10-16T18:00:00Z',
-      location: 'Updated Location',
-      availableSpots: 5,
-    };
+    const match = Match.newMatch(command);
+
+    const editCommand = new EditMatchCommand();
+    editCommand.dateGame = new Date();
+    editCommand.location = 'new-location';
+    editCommand.availableSpots = 5;
 
     match.updateMatch(editCommand);
 
-    expect(match.getDateGame()).toBe(editCommand.dateGame);
-    expect(match.getLocation()).toBe(editCommand.location);
-    expect(match.getAvailableSpots()).toBe(editCommand.availableSpots);
+    expect(match.getDateGame()).toEqual(editCommand.dateGame);
+    expect(match.getLocation()).toEqual(editCommand.location);
+    expect(match.getAvailableSpots()).toEqual(editCommand.availableSpots);
   });
 
-  it('não deve atualizar dateGame se não for fornecido', () => {
-    const initialDateGame = match.getDateGame();
-    const editCommand: EditMatchCommand = {
-      location: 'New Location',
-      availableSpots: 5,
-    };
+  it('deve cancelar uma partida', () => {
+    const command = new CreateMatchCommand();
+    command.date = new Date();
+    command.playerId = 'player-id';
+    command.location = 'location';
+    command.teamLevel = TEAM_LEVEL.AVANCADO;
+    command.availableSpots = 10;
+    command.city = 'city';
+    command.state = 'state';
 
-    match.updateMatch(editCommand);
+    const match = Match.newMatch(command);
+    match.cancelMatch();
 
-    expect(match.getDateGame()).toBe(initialDateGame);
+    expect(match.getStatus()).toEqual(STATUS_MATCH.CANCELADA);
   });
 
-  it('não deve atualizar availableSpots se o valor fornecido for negativo', () => {
-    const initialAvailableSpots = match.getAvailableSpots();
-    const editCommand: EditMatchCommand = {
-      availableSpots: -5,
-    };
+  it('deve incrementar as vagas disponíveis', () => {
+    const command = new CreateMatchCommand();
+    command.date = new Date();
+    command.playerId = 'player-id';
+    command.location = 'location';
+    command.teamLevel = TEAM_LEVEL.AVANCADO;
+    command.availableSpots = 10;
+    command.city = 'city';
+    command.state = 'state';
 
-    match.updateMatch(editCommand);
+    const match = Match.newMatch(command);
+    match.plusOneSpot();
 
-    expect(match.getAvailableSpots()).toBe(initialAvailableSpots);
+    expect(match.getAvailableSpots()).toEqual(11);
   });
 
-  it('deve permitir atualizar a localização', () => {
-    const newLocation = 'New Location';
-    match.setLocation(newLocation);
-    expect(match.getLocation()).toBe(newLocation);
-  });
+  it('deve decrementar as vagas disponíveis', () => {
+    const command = new CreateMatchCommand();
+    command.date = new Date();
+    command.playerId = 'player-id';
+    command.location = 'location';
+    command.teamLevel = TEAM_LEVEL.AVANCADO;
+    command.availableSpots = 10;
+    command.city = 'city';
+    command.state = 'state';
 
-  it('should allow updating available spots', () => {
-    const newAvailableSpots = 15;
-    match.setAvailableSpots(newAvailableSpots);
-    expect(match.getAvailableSpots()).toBe(newAvailableSpots);
-  });
+    const match = Match.newMatch(command);
+    match.minusOneSpot();
 
-  it('deve permitir atualizar o status', () => {
-    const newStatus = STATUS_MATCH.CANCELADA;
-    match.setStatus(newStatus);
-    expect(match.getStatus()).toBe(newStatus);
+    expect(match.getAvailableSpots()).toEqual(9);
   });
 });

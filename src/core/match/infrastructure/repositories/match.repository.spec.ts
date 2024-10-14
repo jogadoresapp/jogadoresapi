@@ -3,29 +3,32 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MatchRepository } from './match.repository';
 import { Match } from '../../domain/entities/match.entity';
-import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { GetAllMatchesCommand } from '../../application/commands/get-all-matches.command';
 import { CreateMatchCommand } from '../../application/commands/create-match.command';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
 
 describe('MatchRepository', () => {
-  let matchRepository: MatchRepository;
-  let repository: Repository<Match>;
-  let match: Match;
-  const playerId = 'player-id-1';
+  let repository: MatchRepository;
+  let mockRepository: Repository<Match>;
+  const matchId = 'existing-id';
   const command: CreateMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
-    playerId,
-    location: 'Test Location',
-    teamLevel: TEAM_LEVEL.INICIANTE,
+    date: new Date(),
+    playerId: '123e4567-e89b-12d3-a456-426614174000',
+    location: 'Estrela da Vila Baummer',
+    teamLevel: TEAM_LEVEL.AVANCADO,
     availableSpots: 10,
+    city: 'city',
+    state: 'state',
+    sport: SPORTS.FUTEBOL,
   };
 
   const commandEdit: EditMatchCommand = {
-    dateGame: '2024-10-15T18:00:00Z',
     location: 'New Location',
     availableSpots: 10,
   };
+  const match = Match.newMatch(command);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,71 +40,54 @@ describe('MatchRepository', () => {
         },
       ],
     }).compile();
-
-    matchRepository = module.get<MatchRepository>(MatchRepository);
-    repository = module.get<Repository<Match>>(getRepositoryToken(Match));
-    match = Match.newMatch(command);
-    match.setId('1');
+    match.setId(matchId);
+    repository = module.get<MatchRepository>(MatchRepository);
+    mockRepository = module.get<Repository<Match>>(getRepositoryToken(Match));
   });
 
-  describe('findById', () => {
-    it('deve retornar uma partida quando encontrada', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(match);
+  it('deve salvar uma partida', async () => {
+    jest.spyOn(mockRepository, 'save').mockResolvedValue(match);
 
-      const result = await matchRepository.findById(playerId);
-      expect(result).toEqual(match);
-    });
+    expect(await repository.save(match)).toBe(match);
+  });
 
-    it('deve retornar nulo quando nenhuma partida for encontrada', async () => {
-      const id = '1';
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+  it('deve encontrar uma partida pelo id', async () => {
+    jest.spyOn(mockRepository, 'findOne').mockResolvedValue(match);
 
-      const result = await matchRepository.findById(id);
-      expect(result).toBeNull();
-    });
-    describe('save', () => {
-      it('deve salvar e retornar a partida', async () => {
-        jest.spyOn(repository, 'save').mockResolvedValue(match);
+    expect(await repository.findById('existing-id')).toBe(match);
+  });
 
-        const result = await matchRepository.save(match);
-        expect(result).toEqual(match);
-      });
-    });
+  it('deve atualizar uma partida', async () => {
+    jest.spyOn(mockRepository, 'update').mockResolvedValue(undefined);
+    jest.spyOn(repository, 'findById').mockResolvedValue(match);
 
-    describe('findAllByStatus', () => {
-      it('deve retornar as partidas com o status fornecido', async () => {
-        const status = STATUS_MATCH.A_REALIZAR;
-        const matches = [Match.newMatch(command)];
-        jest.spyOn(repository, 'find').mockResolvedValue(matches);
+    const matchEdit = match.updateMatch(commandEdit);
+    expect(await repository.update('existing-id', matchEdit as any)).toBe(
+      match,
+    );
+  });
 
-        const result = await matchRepository.findAllByStatus(status);
-        expect(result).toEqual(matches);
-      });
-    });
+  it('deve encontrar todas as partidas pelos filtros', async () => {
+    const query: GetAllMatchesCommand = {
+      status: undefined,
+      sport: undefined,
+      teamLevel: undefined,
+      city: 'São Paulo',
+      state: 'SP',
+      playerId: '123e4567-e89b-12d3-a456-426614174000',
+    };
+    const matches = [match];
 
-    describe('findAllById', () => {
-      it('deve retornar as partidas com os IDs fornecidos', async () => {
-        const ids = ['1'];
+    const createQueryBuilder: any = {
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue(matches),
+    };
 
-        jest.spyOn(repository, 'findByIds').mockResolvedValue([match]);
+    jest
+      .spyOn(mockRepository, 'createQueryBuilder')
+      .mockReturnValue(createQueryBuilder);
 
-        const result = await matchRepository.findAllById(ids);
-        expect(result).toEqual([match]);
-      });
-    });
-
-    describe('update', () => {
-      it('deve atualizar e retornar a partida', async () => {
-        const updatedMatch = match.updateMatch(commandEdit);
-
-        jest.spyOn(repository, 'update').mockResolvedValue(undefined);
-        jest
-          .spyOn(repository, 'findOne')
-          .mockResolvedValue(updatedMatch as any);
-
-        const result = await matchRepository.update(match.getId(), {});
-        expect(result).toEqual(updatedMatch);
-      });
-    });
+    expect(await repository.findAllByFilters(query)).toBe(matches);
   });
 });
