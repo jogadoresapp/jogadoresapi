@@ -1,7 +1,7 @@
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { Injectable } from '@nestjs/common';
 import { Match } from '../../domain/entities/match.entity';
-import { validateExistence } from 'src/common/helpers/validation.helper';
+import { validateExistence } from '../../../../common/helpers/validation.helper';
 
 @Injectable()
 export class GetMatchByIdService {

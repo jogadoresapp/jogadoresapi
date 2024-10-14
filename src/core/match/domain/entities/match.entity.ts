@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { EditMatchCommand } from '../../application/commands/edit-match.command';
-import { SPORTS } from 'src/common/enums/sports.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
 @Entity()
 export class Match {

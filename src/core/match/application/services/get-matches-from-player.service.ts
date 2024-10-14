@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { Match } from '../../domain/entities/match.entity';
-import { PlayerRepository } from 'src/core/player/infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
 import { GetMatchesFromPlayer } from '../use-cases/get-matches-from-player.use-case';
 
 @Injectable()
