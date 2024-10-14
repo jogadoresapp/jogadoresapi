@@ -23,5 +23,5 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nestjs -u 1001
 USER nestjs
 
-EXPOSE 8080
+EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
