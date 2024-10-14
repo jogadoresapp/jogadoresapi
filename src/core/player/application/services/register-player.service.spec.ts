@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegisterPlayerService } from './register-player.service';
-import { PlayerRepository } from '../../infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 import { RegisterPlayerCommand } from '../commands/register-player.command';
 import * as bcrypt from 'bcrypt';
-import { Player } from '../../domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 
 jest.mock('bcrypt');
-jest.mock('../../infraestructure/repositories/player.repository');
+jest.mock('../../infrastructure/repositories/player.repository');
 
 describe('RegisterPlayerService', () => {
   let service: RegisterPlayerService;

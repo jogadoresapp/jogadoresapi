@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { GetMatchesFromPlayerhService } from './get-matches-from-player.service';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
-import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../../player/infrastructure/repositories/player.repository';
 import { Match } from '../../domain/entities/match.entity';
 import { CreateMatchCommand } from '../commands/create-match.command';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';

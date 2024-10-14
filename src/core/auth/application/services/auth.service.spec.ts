@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../../player/infrastructure/repositories/player.repository';
 import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {

@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PlayerRepository } from '../../../player/infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../../player/infrastructure/repositories/player.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from '../../domain/jwt-payload';
 

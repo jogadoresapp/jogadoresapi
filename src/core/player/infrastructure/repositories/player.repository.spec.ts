@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PlayerRepository } from './player.repository';
-import { Player } from '../../domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 import { Repository } from 'typeorm';
 
 describe('PlayerRepository', () => {

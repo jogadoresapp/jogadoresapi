@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetPlayerUseCase } from '../usecases/get-player.use-case';
-import { Player } from '../../domain/entitites/player.entity';
-import { PlayerRepository } from '../../infraestructure/repositories/player.repository';
+import { Player } from '../../domain/entities/player.entity';
+import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 
 @Injectable()
 export class GetPlayerService implements GetPlayerUseCase {

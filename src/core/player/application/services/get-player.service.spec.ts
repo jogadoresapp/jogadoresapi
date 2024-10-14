@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetPlayerService } from './get-player.service';
-import { PlayerRepository } from '../../infraestructure/repositories/player.repository';
-import { Player } from '../../domain/entitites/player.entity';
+import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
+import { Player } from '../../domain/entities/player.entity';
 import { NotFoundException } from '@nestjs/common';
 
 describe('GetPlayerService', () => {
