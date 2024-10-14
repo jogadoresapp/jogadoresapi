@@ -30,7 +30,7 @@ import { GetMatchByIdService } from '../../application/services/get-match-by-id.
 import { GetAllMatchesCommand } from '../../application/commands/get-all-matches.command';
 import { LeaveMatchService } from '../../application/services/leave-match.service';
 import { MatchCommand } from '../../application/commands/match.command';
-import { Player } from 'src/core/player/domain/entitites/player.entity';
+import { Player } from 'src/core/player/domain/entities/player.entity';
 import { GetPlayersFromMatchService } from '../../application/services/get-players-from-match.service';
 import { GetMatchesFromPlayerhService } from '../../application/services/get-matches-from-player.service';
 import { Match } from '../../domain/entities/match.entity';

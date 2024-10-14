@@ -1,4 +1,4 @@
-import { Player } from '../../../player/domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 import { UpdatePlayerCommand } from '../commands/update-player.command';
 
 export interface UpdatePlayerUseCase {

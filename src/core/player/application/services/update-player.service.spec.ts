@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { UpdatePlayerService } from './update-player.service';
-import { PlayerRepository } from '../../infraestructure/repositories/player.repository';
+import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 import { UpdatePlayerCommand } from '../commands/update-player.command';
-import { Player } from '../../domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 
 describe('UpdatePlayerService', () => {
   let service: UpdatePlayerService;

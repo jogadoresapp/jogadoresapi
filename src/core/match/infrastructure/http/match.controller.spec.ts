@@ -12,7 +12,7 @@ import { GetMatchByIdService } from '../../application/services/get-match-by-id.
 import { GetPlayersFromMatchService } from '../../application/services/get-players-from-match.service';
 import { GetMatchesFromPlayerhService } from '../../application/services/get-matches-from-player.service';
 import { MatchCommand } from '../../application/commands/match.command';
-import { Player } from '../../../player/domain/entitites/player.entity';
+import { Player } from '../../../player/domain/entities/player.entity';
 import { INestApplication } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';

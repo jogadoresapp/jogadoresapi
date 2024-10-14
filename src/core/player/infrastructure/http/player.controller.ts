@@ -20,7 +20,7 @@ import { RegisterPlayerService } from '../../application/services/register-playe
 import { GetPlayerService } from '../../application/services/get-player.service';
 import { UpdatePlayerService } from '../../application/services/update-player.service';
 import { RegisterPlayerCommand } from '../../application/commands/register-player.command';
-import { Player } from '../../domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 import { UpdatePlayerCommand } from '../../application/commands/update-player.command';
 import { AuthGuard } from '@nestjs/passport';
 

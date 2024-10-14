@@ -3,7 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { GetPlayersFromMatchService } from './get-players-from-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
-import { Player } from '../../../player/domain/entitites/player.entity';
+import { Player } from '../../../player/domain/entities/player.entity';
 import { CreateMatchCommand } from '../commands/create-match.command';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
 import { SPORTS } from '../../../../common/enums/sports.enum';

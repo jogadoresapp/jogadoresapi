@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Player } from 'src/core/player/domain/entitites/player.entity';
+import { Player } from 'src/core/player/domain/entities/player.entity';
 
 export class MatchCommand {
   @ApiProperty({

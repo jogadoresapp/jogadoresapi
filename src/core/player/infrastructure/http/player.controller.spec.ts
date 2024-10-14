@@ -11,7 +11,7 @@ import { INestApplication } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '../../../auth/infrastructure/strategies/jwt.strategy';
-import { Player } from '../../domain/entitites/player.entity';
+import { Player } from '../../domain/entities/player.entity';
 
 describe('PlayerController', () => {
   let app: INestApplication;

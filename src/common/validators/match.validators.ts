@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { STATUS_MATCH } from '../enums/status-match.enum';
-import { Player } from 'src/core/player/domain/entitites/player.entity';
+import { Player } from 'src/core/player/domain/entities/player.entity';
 
 /**
  * Valida se a partida está com o status A_REALIZAR
