@@ -147,6 +147,14 @@ export class Match {
     return this.sport;
   }
 
+  getCity(): string {
+    return this.city;
+  }
+
+  getState(): string {
+    return this.state;
+  }
+
   setId(id: string): void {
     this.id = id;
   }

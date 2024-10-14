@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { SPORTS } from 'src/common/enums/sports.enum';
-import { STATUS_MATCH } from 'src/common/enums/status-match.enum';
-import { TEAM_LEVEL } from 'src/common/enums/team-level.enum';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
+import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
 export class GetAllMatchesCommand {
   @ApiPropertyOptional({

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEnum, IsInt, Min, IsDateString } from 'class-validator';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import { SPORTS } from 'src/common/enums/sports.enum';
+import { SPORTS } from '../../../../common/enums/sports.enum';
 
 export class CreateMatchCommand {
   @ApiProperty({
