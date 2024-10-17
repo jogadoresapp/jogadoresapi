@@ -9,7 +9,7 @@ export const DatabaseConfig = TypeOrmModule.forRootAsync({
     configService: ConfigService,
   ): Promise<DataSourceOptions> => ({
     type: 'postgres',
-    host: configService.get<string>('POSTGRES_HOST', 'localhost'),
+    host: configService.get<string>('POSTGRES_HOST', 'postgres'),
     port: configService.get<number>('POSTGRES_PORT', 5432),
     username: configService.get<string>('POSTGRES_USER'),
     password: configService.get<string>('POSTGRES_PASSWORD'),

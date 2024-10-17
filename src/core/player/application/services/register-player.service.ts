@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RegisterPlayerUseCase } from '../usecases/register-player.use-case';
 import { RegisterPlayerCommand } from '../commands/register-player.command';
 import { Player } from '../../domain/entities/player.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 
 @Injectable()
