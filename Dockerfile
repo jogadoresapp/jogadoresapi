@@ -26,4 +26,5 @@ COPY --from=build /usr/src/app/package*.json ./
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "dockerize -wait tcp://postgres:5432 -timeout 60s && node dist/main"]
+CMD ["npm", "run", "start:prod"]
+
