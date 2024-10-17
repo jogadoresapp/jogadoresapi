@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build: .
@@ -9,11 +11,15 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=jogadoresdb
       - JWT_SECRET=${JWT_SECRET}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - DB_USERNAME=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=jogadoresdb
     depends_on:
       - postgres
     networks:
       - app_network
-      - db_network
 
   postgres:
     image: postgres:latest
@@ -27,7 +33,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - db_network
+      - app_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -40,13 +46,11 @@ services:
     depends_on:
       - postgres
     networks:
-      - db_network
+      - app_network
 
 volumes:
   postgres_data:
 
 networks:
   app_network:
-    driver: bridge
-  db_network:
     driver: bridge
