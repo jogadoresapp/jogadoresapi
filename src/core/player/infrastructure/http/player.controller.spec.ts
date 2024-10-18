@@ -44,21 +44,27 @@ describe('PlayerController', () => {
         {
           provide: GetPlayerService,
           useValue: {
-            execute: jest
-              .fn()
-              .mockResolvedValue(
-                new Player('John Doe', 'john@example.com', 'password123'),
-              ),
+            execute: jest.fn().mockResolvedValue(
+              Player.create({
+                id: '1',
+                name: 'John Doe',
+                email: 'jhon@doe.com',
+                password: '123432',
+              }),
+            ),
           },
         },
         {
           provide: UpdatePlayerService,
           useValue: {
-            execute: jest
-              .fn()
-              .mockResolvedValue(
-                new Player('John Doe', 'john@example.com', 'password123'),
-              ),
+            execute: jest.fn().mockResolvedValue(
+              Player.create({
+                id: '1',
+                name: 'John Doe',
+                email: 'jhon@doe.com',
+                password: '123432',
+              }),
+            ),
           },
         },
         JwtStrategy,
@@ -81,7 +87,12 @@ describe('PlayerController', () => {
     getPlayerService = module.get<GetPlayerService>(GetPlayerService);
     updatePlayerService = module.get<UpdatePlayerService>(UpdatePlayerService);
 
-    player = new Player('John Doe', 'john@example.com', 'password123');
+    player = Player.create({
+      id: '1',
+      name: 'John Doe',
+      email: 'jhon@doe.com',
+      password: '123432',
+    });
     token = jwtService.sign({ sub: player.id, email: player.email });
   });
 

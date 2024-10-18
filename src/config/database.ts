@@ -1,20 +1,12 @@
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSourceOptions } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
-export const DatabaseConfig = TypeOrmModule.forRootAsync({
+export const DatabaseConfig = MongooseModule.forRootAsync({
   imports: [ConfigModule],
   inject: [ConfigService],
-  useFactory: async (
-    configService: ConfigService,
-  ): Promise<DataSourceOptions> => ({
-    type: 'postgres',
-    host: configService.get<string>('POSTGRES_HOST', 'postgres'),
-    port: configService.get<number>('POSTGRES_PORT', 5432),
-    username: configService.get<string>('POSTGRES_USER'),
-    password: configService.get<string>('POSTGRES_PASSWORD'),
-    database: configService.get<string>('POSTGRES_DB'),
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
+  useFactory: async (configService: ConfigService) => ({
+    uri: configService.get<string>('MONGODB_URI'),
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   }),
 });

@@ -26,19 +26,25 @@ describe('GetPlayerService', () => {
     service = module.get<GetPlayerService>(GetPlayerService);
   });
 
-  it('should be defined', () => {
+  it('deve instanciar o documento', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return a player when found', async () => {
-    const player = new Player('John Doe', 'john@example.com', 'password123');
+  it('deve retornar o jogador quando encotrado ele cadastrado', async () => {
+    const player = Player.create({
+      id: '1',
+      name: 'John Doe',
+      email: 'jhon@doe.com',
+      password: '123432',
+    });
+
     mockPlayerRepository.findById.mockResolvedValue(player);
     const result = await service.execute('1');
     expect(result).toEqual(player);
     expect(mockPlayerRepository.findById).toHaveBeenCalledWith('1');
   });
 
-  it('should throw NotFoundException when player is not found', async () => {
+  it('deve retornar NotFoundEcep', async () => {
     mockPlayerRepository.findById.mockResolvedValue(null);
     await expect(service.execute('5')).rejects.toThrow(NotFoundException);
     expect(mockPlayerRepository.findById).toHaveBeenCalledWith('1');

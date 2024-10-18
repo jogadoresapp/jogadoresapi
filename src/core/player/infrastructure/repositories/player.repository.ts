@@ -1,29 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Player } from '../../domain/entities/player.entity';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Player, PlayerDocument } from '../../domain/entities/player.entity';
 
 @Injectable()
 export class PlayerRepository {
   constructor(
-    @InjectRepository(Player)
-    private readonly repository: Repository<Player>,
+    @InjectModel(Player.name)
+    private readonly playerModel: Model<PlayerDocument>,
   ) {}
 
-  async save(player: Player): Promise<Player> {
-    return this.repository.save(player);
+  async save(playerData: Partial<Player>): Promise<Player> {
+    const createdPlayer = await this.playerModel.create(playerData);
+    return createdPlayer.toObject();
   }
 
   async findById(id: string): Promise<Player | null> {
-    return this.repository.findOne({ where: { id } });
+    return this.playerModel.findById(id).exec();
   }
 
   async findByEmail(email: string): Promise<Player | null> {
-    return this.repository.findOne({ where: { email } });
+    return this.playerModel.findOne({ email }).exec();
   }
 
-  async update(id: string, player: Partial<Player>): Promise<Player> {
-    await this.repository.update(id, player);
-    return this.findById(id);
+  async update(id: string, player: Partial<Player>): Promise<Player | null> {
+    return this.playerModel.findByIdAndUpdate(id, player, { new: true }).exec();
   }
 }

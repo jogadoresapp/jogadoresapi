@@ -40,7 +40,12 @@ describe('UpdatePlayerService', () => {
   });
 
   it('deve atualizar o jogador se ele for encontrado', async () => {
-    const player = new Player('John Doe', 'john@example.com', 'password123');
+    const player = Player.create({
+      id: '1',
+      name: 'John Doe',
+      email: 'jhon@doe.com',
+      password: '123432',
+    });
     mockPlayerRepository.findById.mockResolvedValue(player);
     mockPlayerRepository.update.mockResolvedValue(player);
 

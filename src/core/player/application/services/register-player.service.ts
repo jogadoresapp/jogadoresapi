@@ -11,7 +11,13 @@ export class RegisterPlayerService implements RegisterPlayerUseCase {
 
   async execute(command: RegisterPlayerCommand): Promise<string> {
     const hashedPassword = await bcrypt.hash(command.password, 10);
-    const player = Player.create(command.name, command.email, hashedPassword);
+    const player = Player.create(
+      new Player({
+        name: command.name,
+        email: command.email,
+        password: hashedPassword,
+      }),
+    );
     const savedPlayer = await this.playerRepository.save(player);
     return savedPlayer.id;
   }
