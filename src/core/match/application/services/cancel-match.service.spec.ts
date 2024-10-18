@@ -41,7 +41,7 @@ describe('CancelMatchService', () => {
       ],
     }).compile();
     match = Match.newMatch(command);
-    match.setId(matchId);
+    match.id = matchId;
     service = module.get<CancelMatchService>(CancelMatchService);
     matchRepository = module.get<MatchRepository>(MatchRepository);
   });
@@ -55,7 +55,7 @@ describe('CancelMatchService', () => {
   });
 
   it('deve atualizar o status da partida para CANCELADA e retornar o id da partida', async () => {
-    match.setStatus(STATUS_MATCH.A_REALIZAR);
+    match.status = STATUS_MATCH.A_REALIZAR;
     jest.spyOn(matchRepository, 'findById').mockResolvedValue(match);
     jest.spyOn(matchRepository, 'update').mockResolvedValue(null);
 

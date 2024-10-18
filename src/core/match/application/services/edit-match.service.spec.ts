@@ -48,7 +48,7 @@ describe('EditMatchService', () => {
     service = module.get<EditMatchService>(EditMatchService);
     matchRepository = module.get<MatchRepository>(MatchRepository);
     match = Match.newMatch(commandNew);
-    match.setId(matchId);
+    match.id = matchId;
   });
 
   it('deve lançar NotFoundException se a partida não for encontrada.', async () => {

@@ -1,110 +1,94 @@
-import { CreateMatchCommand } from '../../application/commands/create-match.command';
-import { STATUS_MATCH } from '../../../..//common/enums/status-match.enum';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { STATUS_MATCH } from '../../../../common/enums/status-match.enum';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { EditMatchCommand } from '../../application/commands/edit-match.command';
 import { SPORTS } from '../../../../common/enums/sports.enum';
+import { CreateMatchCommand } from '../../application/commands/create-match.command';
+import { EditMatchCommand } from '../../application/commands/edit-match.command';
+import { HydratedDocument } from 'mongoose';
 
-@Entity()
+export type MatchDocument = HydratedDocument<Match>;
+
+@Schema({ timestamps: true })
 export class Match {
-  @PrimaryGeneratedColumn('uuid')
-  private id: string;
-
-  @Column({ type: 'timestamptz', nullable: false })
-  private date: Date;
-
-  @Column({ type: 'uuid', nullable: false, name: 'player_id' })
-  private playerId: string;
-
-  @Column({ type: 'varchar', nullable: false })
-  private location: string;
-
-  @Column({ type: 'varchar', nullable: false })
-  private city: string;
-
-  @Column({ type: 'varchar', nullable: false })
-  private state: string;
-
-  @Column({
-    type: 'enum',
-    enum: TEAM_LEVEL,
-    name: 'team_level',
+  @Prop({
+    type: String,
+    default: uuidv4,
+    unique: true,
   })
-  private teamLevel: TEAM_LEVEL;
+  id: string;
 
-  @Column({ type: 'int', nullable: false, name: 'available_spots' })
-  private availableSpots: number;
+  @Prop({ required: true })
+  date: Date;
 
-  @Column({ type: 'enum', enum: STATUS_MATCH, nullable: false, name: 'status' })
-  private status: STATUS_MATCH;
+  @Prop({ required: true, type: String })
+  playerId: string;
 
-  @Column({ type: 'enum', enum: SPORTS, nullable: false })
-  private sport: SPORTS;
+  @Prop({ required: true })
+  location: string;
 
-  @CreateDateColumn({ name: 'created_at' })
-  private createdAt: Date;
+  @Prop({ required: true })
+  city: string;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  private updatedAt: Date;
+  @Prop({ required: true })
+  state: string;
 
-  @DeleteDateColumn({ name: 'deleted_at' })
-  private deletedAt: Date;
+  @Prop({ required: true, enum: TEAM_LEVEL })
+  teamLevel: TEAM_LEVEL;
 
-  private constructor(
-    id: string,
-    date: Date,
-    playerId: string,
-    location: string,
-    teamLevel: TEAM_LEVEL,
-    availableSpots: number,
-    sport: SPORTS,
-    status: STATUS_MATCH,
-    city: string,
-    state: string,
-  ) {
-    this.id = id;
-    this.date = date;
-    this.playerId = playerId;
-    this.location = location;
-    this.teamLevel = teamLevel;
-    this.availableSpots = availableSpots;
-    this.sport = sport;
-    this.status = status;
-    this.city = city;
-    this.state = state;
+  @Prop({ required: true })
+  availableSpots: number;
+
+  @Prop({
+    required: true,
+    enum: STATUS_MATCH,
+    default: STATUS_MATCH.A_REALIZAR,
+  })
+  status: STATUS_MATCH;
+
+  @Prop({ required: true, enum: SPORTS, default: SPORTS.FUTEBOL })
+  sport: SPORTS;
+
+  @Prop({ type: [{ type: String }], default: [] })
+  players: string[];
+
+  @Prop()
+  createdAt: Date;
+
+  @Prop()
+  updatedAt: Date;
+
+  @Prop()
+  deletedAt: Date;
+
+  constructor(partial: Partial<Match>) {
+    Object.assign(this, partial);
   }
 
-  static newMatch(command: CreateMatchCommand): Match {
-    return new Match(
-      undefined,
-      command.date,
-      command.playerId,
-      command.location,
-      command.teamLevel,
-      command.availableSpots,
-      SPORTS.FUTEBOL,
-      STATUS_MATCH.A_REALIZAR,
-      command.city,
-      command.state,
-    );
+  public static newMatch(command: CreateMatchCommand): Match {
+    return new Match({
+      date: command.date,
+      playerId: command.playerId,
+      location: command.location,
+      teamLevel: command.teamLevel,
+      availableSpots: command.availableSpots,
+      sport: SPORTS.FUTEBOL,
+      status: STATUS_MATCH.A_REALIZAR,
+      city: command.city,
+      state: command.state,
+      players: [],
+    });
   }
 
   updateMatch(command: EditMatchCommand): void {
-    if (command.dateGame) this.setDateGame(command.dateGame);
-    if (command.location) this.setLocation(command.location);
+    if (command.dateGame) this.date = command.dateGame;
+    if (command.location) this.location = command.location;
     if (command.availableSpots >= 0)
-      this.setAvailableSpots(command.availableSpots);
+      this.availableSpots = command.availableSpots;
   }
 
   cancelMatch(): void {
-    this.setStatus(STATUS_MATCH.CANCELADA);
+    this.status = STATUS_MATCH.CANCELADA;
   }
 
   plusOneSpot(): void {
@@ -115,67 +99,20 @@ export class Match {
     this.availableSpots--;
   }
 
-  getId(): string {
-    return this.id;
+  addPlayer(playerId: string): void {
+    if (!this.players.includes(playerId)) {
+      this.players.push(playerId);
+      this.minusOneSpot();
+    }
   }
 
-  getDateGame(): Date {
-    return this.date;
-  }
-
-  getPlayerId(): string {
-    return this.playerId;
-  }
-
-  getLocation(): string {
-    return this.location;
-  }
-
-  getTeamLevel(): TEAM_LEVEL {
-    return this.teamLevel;
-  }
-
-  getAvailableSpots(): number {
-    return this.availableSpots;
-  }
-
-  getStatus(): STATUS_MATCH {
-    return this.status;
-  }
-
-  getSports(): SPORTS {
-    return this.sport;
-  }
-
-  getCity(): string {
-    return this.city;
-  }
-
-  getState(): string {
-    return this.state;
-  }
-
-  setId(id: string): void {
-    this.id = id;
-  }
-
-  setDateGame(dateGame: Date): void {
-    this.date = dateGame;
-  }
-
-  setLocation(location: string): void {
-    this.location = location;
-  }
-
-  setAvailableSpots(availableSpots: number): void {
-    this.availableSpots = availableSpots;
-  }
-
-  setStatus(status: STATUS_MATCH): void {
-    this.status = status;
-  }
-
-  setSport(sport: SPORTS): void {
-    this.sport = sport;
+  removePlayer(playerId: string): void {
+    const index = this.players.indexOf(playerId);
+    if (index > -1) {
+      this.players.splice(index, 1);
+      this.plusOneSpot();
+    }
   }
 }
+
+export const MatchSchema = SchemaFactory.createForClass(Match);

@@ -13,8 +13,8 @@ export class CancelMatchService implements CancelMatchUseCase {
 
     validateExistence(match, 'Partida', id);
 
-    match.setStatus(STATUS_MATCH.CANCELADA);
+    match.status = STATUS_MATCH.CANCELADA;
     await this.matchRepository.update(id, match);
-    return match.getId();
+    return match.id;
   }
 }

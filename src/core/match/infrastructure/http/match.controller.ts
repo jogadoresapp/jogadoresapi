@@ -33,7 +33,7 @@ import { LeaveMatchService } from '../../application/services/leave-match.servic
 import { MatchCommand } from '../../application/commands/match.command';
 import { Player } from 'src/core/player/domain/entities/player.entity';
 import { GetPlayersFromMatchService } from '../../application/services/get-players-from-match.service';
-import { GetMatchesFromPlayerhService } from '../../application/services/get-matches-from-player.service';
+import { GetMatchesFromPlayerService } from '../../application/services/get-matches-from-player.service';
 import { Match } from '../../domain/entities/match.entity';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -49,7 +49,7 @@ export class MatchController {
     private readonly getMatchByIdService: GetMatchByIdService,
     private readonly cancelMatchService: CancelMatchService,
     private readonly getPlayersFromMatchService: GetPlayersFromMatchService,
-    private readonly getMatchesFromPlayerhService: GetMatchesFromPlayerhService,
+    private readonly getMatchesFromPlayerService: GetMatchesFromPlayerService,
   ) {}
 
   @Post()
@@ -63,8 +63,8 @@ export class MatchController {
     status: STATUS_CODES.BAD_REQUEST,
     description: MATCH_MESSAGES.ERROR_BAD_REQUEST,
   })
-  // // @UseGuards(AuthGuard('jwt'))
-  // @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('jwt')
   async createMatch(@Body() command: CreateMatchCommand) {
     const matchId = await this.createService.execute(command);
     return { id: matchId };
@@ -75,7 +75,7 @@ export class MatchController {
   @ApiParam({ name: 'id', description: 'Partida ID' })
   @ApiBody({ type: EditMatchCommand })
   @ApiCustomResponses(MATCH_MESSAGES.EDIT_MATCH_SUCCESS)
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async editMatch(
     @Param('id') id: string,
     @Body() command: Partial<EditMatchCommand>,
@@ -87,7 +87,7 @@ export class MatchController {
   @Get()
   @ApiOperation({ summary: MATCH_MESSAGES.LIST_ALL_MATCHES })
   @ApiCustomResponses(MATCH_MESSAGES.LIST_ALL_MATCHES)
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async getAllMatches(@Query() filters: GetAllMatchesCommand) {
     return this.getAllMatchesService.execute(filters);
   }
@@ -97,10 +97,10 @@ export class MatchController {
   @ApiParam({ name: 'matchId', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async joinMatch(
     @Param('matchId') matchId: string,
-    @Body('playerId') playerId: Pick<Player, 'id'>,
+    @Body('playerId') playerId: string,
   ) {
     const command = new MatchCommand(matchId, playerId);
     await this.joinMatchService.execute(command);
@@ -112,10 +112,10 @@ export class MatchController {
   @ApiParam({ name: 'matchId', description: 'Partida ID' })
   @ApiBody({ schema: { properties: { playerId: { type: 'string' } } } })
   @ApiCustomResponses(MATCH_MESSAGES.SUCCESS_CONFIRM)
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   async leaveMatch(
     @Param('matchId') matchId: string,
-    @Body('playerId') playerId: Pick<Player, 'id'>,
+    @Body('playerId') playerId: string,
   ) {
     const command = new MatchCommand(matchId, playerId);
     await this.leaveMatchService.execute(command);
@@ -159,6 +159,6 @@ export class MatchController {
   async getMatchesFromPlayers(
     @Param('playerId') playerId: string,
   ): Promise<Match[]> {
-    return this.getMatchesFromPlayerhService.execute(playerId);
+    return this.getMatchesFromPlayerService.execute(playerId);
   }
 }

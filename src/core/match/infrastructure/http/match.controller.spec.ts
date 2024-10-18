@@ -10,7 +10,7 @@ import { JoinMatchService } from '../../application/services/join-match.service'
 import { LeaveMatchService } from '../../application/services/leave-match.service';
 import { GetMatchByIdService } from '../../application/services/get-match-by-id.service';
 import { GetPlayersFromMatchService } from '../../application/services/get-players-from-match.service';
-import { GetMatchesFromPlayerhService } from '../../application/services/get-matches-from-player.service';
+import { GetMatchesFromPlayerService } from '../../application/services/get-matches-from-player.service';
 import { MatchCommand } from '../../application/commands/match.command';
 import { Player } from '../../../player/domain/entities/player.entity';
 import { INestApplication } from '@nestjs/common';
@@ -34,7 +34,7 @@ describe('MatchController', () => {
   let getMatchByIdService: GetMatchByIdService;
   let cancelMatchService: CancelMatchService;
   let getPlayersFromMatchService: GetPlayersFromMatchService;
-  let getMatchesFromPlayerhService: GetMatchesFromPlayerhService;
+  let getMatchesFromPlayerService: GetMatchesFromPlayerService;
   let token: string;
 
   const command: CreateMatchCommand = {
@@ -109,7 +109,7 @@ describe('MatchController', () => {
           },
         },
         {
-          provide: GetMatchesFromPlayerhService,
+          provide: GetMatchesFromPlayerService,
           useValue: {
             execute: jest.fn().mockResolvedValue([]),
           },
@@ -139,11 +139,15 @@ describe('MatchController', () => {
     getPlayersFromMatchService = module.get<GetPlayersFromMatchService>(
       GetPlayersFromMatchService,
     );
-    getMatchesFromPlayerhService = module.get<GetMatchesFromPlayerhService>(
-      GetMatchesFromPlayerhService,
+    getMatchesFromPlayerService = module.get<GetMatchesFromPlayerService>(
+      GetMatchesFromPlayerService,
     );
 
-    const player = new Player('John Doe', 'john@example.com', 'password123');
+    const player = new Player({
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      password: 'password123',
+    });
     token = jwtService.sign({ sub: player.id, email: player.email });
   });
 
@@ -188,9 +192,7 @@ describe('MatchController', () => {
   });
 
   it('deve entrar em uma partida', async () => {
-    const command = new MatchCommand('match-id-1', {
-      id: 'player-id-1',
-    } as Pick<Player, 'id'>);
+    const command = new MatchCommand('match-id-1', 'player-id-1');
 
     await request(app.getHttpServer())
       .post(`/partidas/${command.matchId}/entrar-na-partida`)
@@ -204,9 +206,7 @@ describe('MatchController', () => {
   });
 
   it('deve sair de uma partida', async () => {
-    const command = new MatchCommand('match-id-1', {
-      id: 'player-id-1',
-    } as Pick<Player, 'id'>);
+    const command = new MatchCommand('match-id-1', 'player-id-1');
 
     await request(app.getHttpServer())
       .post(`/partidas/${command.matchId}/sair-da-partida`)
@@ -260,6 +260,6 @@ describe('MatchController', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    expect(getMatchesFromPlayerhService.execute).toHaveBeenCalledWith(playerId);
+    expect(getMatchesFromPlayerService.execute).toHaveBeenCalledWith(playerId);
   });
 });

@@ -1,23 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { Match } from '../../domain/entities/match.entity';
 import { PlayerRepository } from '../../../player/infrastructure/repositories/player.repository';
+import { MatchRepository } from '../../infrastructure/repositories/match.repository';
 import { GetMatchesFromPlayer } from '../use-cases/get-matches-from-player.use-case';
 
 @Injectable()
-export class GetMatchesFromPlayerhService implements GetMatchesFromPlayer {
+export class GetMatchesFromPlayerService implements GetMatchesFromPlayer {
   constructor(
     private readonly playerRepository: PlayerRepository,
-    private readonly matchPlayerRepository: MatchPlayersRepository,
+    private readonly matchRepository: MatchRepository,
   ) {}
 
-  async execute(matchId: string): Promise<Match[]> {
-    const match = await this.playerRepository.findById(matchId);
-
-    if (!match) {
-      throw new NotFoundException('Partida não encontrada');
+  async execute(playerId: string): Promise<Match[]> {
+    const player = await this.playerRepository.findById(playerId);
+    if (!player) {
+      throw new NotFoundException('Jogador não encontrado');
     }
 
-    return await this.matchPlayerRepository.getMatchesFromPlayer(match.id);
+    return this.matchRepository.getMatchesFromPlayer(playerId);
   }
 }

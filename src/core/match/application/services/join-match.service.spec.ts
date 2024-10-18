@@ -2,32 +2,25 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { JoinMatchService } from './join-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { MatchCommand } from '../commands/match.command';
-import { MatchPlayers } from '../../domain/entities/match-player.entity';
 import { validateExistence } from '../../../../common/helpers/validation.helper';
 import { validateMatch } from '../../../../common/validators/match.validators';
 
 jest.mock('../../infrastructure/repositories/match.repository');
-jest.mock('../../infrastructure/repositories/match-players.repository');
 jest.mock('../../../../common/helpers/validation.helper');
 jest.mock('../../../../common/validators/match.validators');
 
 describe('JoinMatchService', () => {
   let service: JoinMatchService;
-  let matchRepository: MatchRepository;
-  let matchPlayerRepository: MatchPlayersRepository;
+  let matchRepository: jest.Mocked<MatchRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JoinMatchService, MatchRepository, MatchPlayersRepository],
+      providers: [JoinMatchService, MatchRepository],
     }).compile();
 
     service = module.get<JoinMatchService>(JoinMatchService);
-    matchRepository = module.get<MatchRepository>(MatchRepository);
-    matchPlayerRepository = module.get<MatchPlayersRepository>(
-      MatchPlayersRepository,
-    );
+    matchRepository = module.get(MatchRepository);
   });
 
   it('deve construir a service', () => {
@@ -35,16 +28,17 @@ describe('JoinMatchService', () => {
   });
 
   it('deve se juntar a partida com sucesso', async () => {
-    const command: MatchCommand = { matchId: '1', playerId: 'player1' as any };
+    const command: MatchCommand = { matchId: '1', playerId: 'player1' };
     const match = {
-      getId: jest.fn().mockReturnValue('1'),
-      getAvailableSpots: jest.fn().mockReturnValue(1),
+      id: '1',
+      availableSpots: 1,
+      players: [],
       minusOneSpot: jest.fn(),
     };
 
-    matchRepository.findById = jest.fn().mockResolvedValue(match);
-    matchPlayerRepository.save = jest.fn();
-    matchRepository.update = jest.fn();
+    matchRepository.findById.mockResolvedValue(match as any);
+    matchRepository.addPlayerToMatch.mockResolvedValue(match as any);
+    matchRepository.update.mockResolvedValue(match as any);
 
     await service.execute(command);
 
@@ -55,25 +49,25 @@ describe('JoinMatchService', () => {
       command.matchId,
     );
     expect(validateMatch).toHaveBeenCalledWith(match, match, command.playerId);
-    expect(match.getAvailableSpots).toHaveBeenCalled();
-    expect(matchPlayerRepository.save).toHaveBeenCalledWith(
-      expect.any(MatchPlayers),
+    expect(matchRepository.addPlayerToMatch).toHaveBeenCalledWith(
+      command.matchId,
+      command.playerId,
     );
     expect(match.minusOneSpot).toHaveBeenCalled();
-    expect(matchRepository.update).toHaveBeenCalledWith(match.getId(), match);
+    expect(matchRepository.update).toHaveBeenCalledWith(match.id, match);
   });
 
   it('deve lançar BadRequestException se a partida estiver lotada', async () => {
-    const command: MatchCommand = { matchId: '1', playerId: 'player1' as any };
+    const command: MatchCommand = { matchId: '1', playerId: 'player1' };
     const match = {
-      getId: jest.fn().mockReturnValue('1'),
-      getAvailableSpots: jest.fn().mockReturnValue(0),
+      id: '1',
+      availableSpots: 0,
+      players: [],
     };
 
-    matchRepository.findById = jest.fn().mockResolvedValue(match);
+    matchRepository.findById.mockResolvedValue(match as any);
 
     await expect(service.execute(command)).rejects.toThrow(BadRequestException);
-
     expect(matchRepository.findById).toHaveBeenCalledWith(command.matchId);
     expect(validateExistence).toHaveBeenCalledWith(
       match,
@@ -81,6 +75,53 @@ describe('JoinMatchService', () => {
       command.matchId,
     );
     expect(validateMatch).toHaveBeenCalledWith(match, match, command.playerId);
-    expect(match.getAvailableSpots).toHaveBeenCalled();
+    expect(matchRepository.addPlayerToMatch).not.toHaveBeenCalled();
+  });
+
+  it('deve lançar BadRequestException se o jogador já estiver na partida', async () => {
+    const command: MatchCommand = { matchId: '1', playerId: 'player1' };
+    const match = {
+      id: '1',
+      availableSpots: 1,
+      players: ['player1'],
+    };
+
+    matchRepository.findById.mockResolvedValue(match as any);
+
+    await expect(service.execute(command)).rejects.toThrow(BadRequestException);
+    expect(matchRepository.findById).toHaveBeenCalledWith(command.matchId);
+    expect(validateExistence).toHaveBeenCalledWith(
+      match,
+      'Partida',
+      command.matchId,
+    );
+    expect(validateMatch).toHaveBeenCalledWith(match, match, command.playerId);
+    expect(matchRepository.addPlayerToMatch).not.toHaveBeenCalled();
+  });
+
+  it('deve lançar BadRequestException se falhar ao adicionar o jogador à partida', async () => {
+    const command: MatchCommand = { matchId: '1', playerId: 'player1' };
+    const match = {
+      id: '1',
+      availableSpots: 1,
+      players: [],
+    };
+
+    matchRepository.findById.mockResolvedValue(match as any);
+    matchRepository.addPlayerToMatch.mockResolvedValue(null);
+
+    await expect(service.execute(command)).rejects.toThrow(BadRequestException);
+    expect(matchRepository.findById).toHaveBeenCalledWith(command.matchId);
+    expect(validateExistence).toHaveBeenCalledWith(
+      match,
+      'Partida',
+      command.matchId,
+    );
+    expect(validateMatch).toHaveBeenCalledWith(match, match, command.playerId);
+    expect(matchRepository.addPlayerToMatch).toHaveBeenCalledWith(
+      command.matchId,
+      command.playerId,
+    );
+    expect(matchRepository.update).not.toHaveBeenCalled();
   });
 });

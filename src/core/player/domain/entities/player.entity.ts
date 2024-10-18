@@ -1,26 +1,34 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-@Entity()
+export type PlayerDocument = HydratedDocument<Player>;
+
+@Schema()
 export class Player {
-  @PrimaryGeneratedColumn('uuid')
+  @Prop({
+    type: String,
+    default: uuidv4,
+    unique: true,
+  })
   id: string;
 
-  @Column()
+  @Prop({ required: true })
   name: string;
 
-  @Column({ unique: true })
+  @Prop({ required: true, unique: true })
   email: string;
 
-  @Column()
+  @Prop({ required: true })
   password: string;
 
-  constructor(name: string, email: string, password: string) {
-    this.name = name;
-    this.email = email;
-    this.password = password;
+  constructor(player: Partial<Player>) {
+    Object.assign(this, player);
   }
 
-  static create(name: string, email: string, password: string): Player {
-    return new Player(name, email, password);
+  static create(player: Player): Player {
+    return new Player(player);
   }
 }
+
+export const PlayerSchema = SchemaFactory.createForClass(Player);
