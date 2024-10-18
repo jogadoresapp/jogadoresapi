@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 import { STATUS_MATCH } from '../enums/status-match.enum';
-import { Player } from 'src/core/player/domain/entities/player.entity';
 
 /**
  * Valida se a partida está com o status A_REALIZAR
@@ -35,7 +34,7 @@ export function validateAvailableSpots(match: any): void {
  */
 export function validatePlayerInMatch(
   matchPlayers: any,
-  playerId: Pick<Player, 'id'>,
+  playerId: string,
 ): void {
   console.log(matchPlayers, playerId);
 }
@@ -44,13 +43,13 @@ export function validatePlayerInMatch(
  * Valida se a partida está com o status A_REALIZAR, se há vagas disponíveis e se o jogador já está confirmado
  * @param match
  * @param matchPlayers
- * @param playerId
+ * @param playerId:string
  * @throws BadRequestException
  */
 export function validateMatch(
   match: any,
   matchPlayers: any,
-  playerId: Pick<Player, 'id'>,
+  playerId: string,
 ): void {
   validateMatchStatus(match);
   validateAvailableSpots(match);

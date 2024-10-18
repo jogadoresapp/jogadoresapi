@@ -44,7 +44,7 @@ describe('CreateMatchService', () => {
     };
     const match = Match.newMatch(command);
     const savedMatch = match;
-    savedMatch.setId('123');
+    savedMatch.id = '123';
 
     jest.spyOn(Match, 'newMatch').mockReturnValue(match);
     jest.spyOn(matchRepository, 'save').mockResolvedValue(savedMatch);

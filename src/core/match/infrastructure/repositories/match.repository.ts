@@ -1,66 +1,97 @@
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { Match } from '../../domain/entities/match.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Match, MatchDocument } from '../../domain/entities/match.entity';
 import { GetAllMatchesCommand } from '../../application/commands/get-all-matches.command';
+import { Player } from '../../../player/domain/entities/player.entity';
 
-Injectable();
+@Injectable()
 export class MatchRepository {
   constructor(
-    @InjectRepository(Match)
-    private readonly repository: Repository<Match>,
+    @InjectModel(Match.name) private readonly matchModel: Model<MatchDocument>,
+    @InjectModel(Player.name) private readonly playerModel: Model<Player>,
   ) {}
 
-  async save(match: Match): Promise<Match> {
-    return this.repository.save(match);
+  async save(match: Partial<Match>): Promise<Match> {
+    const createdMatch = await this.matchModel.create(match);
+    return createdMatch.save();
   }
 
   async findById(id: string): Promise<Match | null> {
-    return this.repository.findOne({ where: { id } as any });
+    return this.matchModel.findById(id).exec();
   }
 
-  async update(id: string, match: Partial<Match>): Promise<Match> {
-    await this.repository.update(id, match);
-    return this.findById(id);
+  async update(id: string, match: Partial<Match>): Promise<Match | null> {
+    return this.matchModel.findByIdAndUpdate(id, match, { new: true }).exec();
   }
 
   async findAllByFilters(filters: GetAllMatchesCommand): Promise<Match[]> {
-    const queryBuilder = this.repository.createQueryBuilder('match');
+    const query: any = {};
 
     if (filters.status) {
-      queryBuilder.andWhere('match.status = :status', {
-        status: filters.status,
-      });
+      query.status = filters.status;
     }
 
-    // if (filters.date) {
-    //   queryBuilder.andWhere('match.date = :date', { date: filters.date });
-    // }
-
     if (filters.sport) {
-      queryBuilder.andWhere('match.sport = :sport', { sport: filters.sport });
+      query.sport = filters.sport;
     }
 
     if (filters.teamLevel) {
-      queryBuilder.andWhere('match.team_level = :teamLevel', {
-        teamLevel: filters.teamLevel,
-      });
+      query.teamLevel = filters.teamLevel;
     }
 
     if (filters.city) {
-      queryBuilder.andWhere('match.city = :city', { city: filters.city });
+      query.city = filters.city;
     }
 
     if (filters.state) {
-      queryBuilder.andWhere('match.state = :state', { state: filters.state });
+      query.state = filters.state;
     }
 
     if (filters.playerId) {
-      queryBuilder.andWhere('match.player_id = :playerId', {
-        playerId: filters.playerId,
-      });
+      query.playerId = filters.playerId;
     }
 
-    return queryBuilder.getMany();
+    // if (filters.date) {
+    //   query.date = filters.date;
+    // }
+
+    return this.matchModel.find(query).exec();
+  }
+
+  async getPlayersFromMatch(matchId: string): Promise<Player[]> {
+    const match = await this.matchModel.findById(matchId).exec();
+    if (!match) return [];
+    return this.playerModel.find({ _id: { $in: match.players } }).exec();
+  }
+
+  async getMatchesFromPlayer(playerId: string): Promise<Match[]> {
+    return this.matchModel.find({ players: playerId }).exec();
+  }
+
+  async addPlayerToMatch(
+    matchId: string,
+    playerId: string,
+  ): Promise<Match | null> {
+    return this.matchModel
+      .findByIdAndUpdate(
+        matchId,
+        { $addToSet: { players: playerId } },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async removePlayerFromMatch(
+    matchId: string,
+    playerId: string,
+  ): Promise<Match | null> {
+    return this.matchModel
+      .findByIdAndUpdate(
+        matchId,
+        { $pull: { players: playerId } },
+        { new: true },
+      )
+      .exec();
   }
 }

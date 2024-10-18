@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Player } from 'src/core/player/domain/entities/player.entity';
 
 export class MatchCommand {
   @ApiProperty({
@@ -12,9 +11,9 @@ export class MatchCommand {
     description: 'identificador do jogador',
     example: '98765432-e89b-12d3-a456-426614174000',
   })
-  public readonly playerId: Pick<Player, 'id'>;
+  public readonly playerId: string;
 
-  constructor(matchId: string, playerId: Pick<Player, 'id'>) {
+  constructor(matchId: string, playerId: string) {
     this.matchId = matchId;
     this.playerId = playerId;
   }

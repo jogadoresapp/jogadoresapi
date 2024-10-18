@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { GetPlayersFromMatchService } from './get-players-from-match.service';
 import { MatchRepository } from '../../infrastructure/repositories/match.repository';
-import { MatchPlayersRepository } from '../../infrastructure/repositories/match-players.repository';
 import { Player } from '../../../player/domain/entities/player.entity';
 import { CreateMatchCommand } from '../commands/create-match.command';
 import { TEAM_LEVEL } from '../../../../common/enums/team-level.enum';
@@ -11,8 +10,7 @@ import { Match } from '../../domain/entities/match.entity';
 
 describe('GetPlayersFromMatchService', () => {
   let service: GetPlayersFromMatchService;
-  let matchRepository: MatchRepository;
-  let matchPlayersRepository: MatchPlayersRepository;
+  let matchRepository: jest.Mocked<MatchRepository>;
 
   const command: CreateMatchCommand = {
     date: new Date(),
@@ -24,7 +22,6 @@ describe('GetPlayersFromMatchService', () => {
     state: 'state',
     sport: SPORTS.FUTEBOL,
   };
-
   const match = Match.newMatch(command);
 
   beforeEach(async () => {
@@ -35,11 +32,6 @@ describe('GetPlayersFromMatchService', () => {
           provide: MatchRepository,
           useValue: {
             findById: jest.fn(),
-          },
-        },
-        {
-          provide: MatchPlayersRepository,
-          useValue: {
             getPlayersFromMatch: jest.fn(),
           },
         },
@@ -49,10 +41,7 @@ describe('GetPlayersFromMatchService', () => {
     service = module.get<GetPlayersFromMatchService>(
       GetPlayersFromMatchService,
     );
-    matchRepository = module.get<MatchRepository>(MatchRepository);
-    matchPlayersRepository = module.get<MatchPlayersRepository>(
-      MatchPlayersRepository,
-    );
+    matchRepository = module.get(MatchRepository);
   });
 
   it('deve criar a service', () => {
@@ -60,26 +49,26 @@ describe('GetPlayersFromMatchService', () => {
   });
 
   it('deve retornar os jogadores da partida', async () => {
-    const matchId = match.getId();
+    const matchId = match.id;
     const players: Player[] = [{ id: '1', name: 'Player 1' } as Player];
-    jest.spyOn(matchRepository, 'findById').mockResolvedValue(match);
-    jest
-      .spyOn(matchPlayersRepository, 'getPlayersFromMatch')
-      .mockResolvedValue(players);
+
+    matchRepository.findById.mockResolvedValue(match);
+    matchRepository.getPlayersFromMatch.mockResolvedValue(players);
 
     const result = await service.execute(matchId);
+
     expect(result).toEqual(players);
     expect(matchRepository.findById).toHaveBeenCalledWith(matchId);
-    expect(matchPlayersRepository.getPlayersFromMatch).toHaveBeenCalledWith(
-      matchId,
-    );
+    expect(matchRepository.getPlayersFromMatch).toHaveBeenCalledWith(matchId);
   });
 
   it('deve lançar NotFoundException ao não achar a partida', async () => {
-    const matchId = match.getId();
-    jest.spyOn(matchRepository, 'findById').mockResolvedValue(null);
+    const matchId = match.id;
+
+    matchRepository.findById.mockResolvedValue(null);
 
     await expect(service.execute(matchId)).rejects.toThrow(NotFoundException);
     expect(matchRepository.findById).toHaveBeenCalledWith(matchId);
+    expect(matchRepository.getPlayersFromMatch).not.toHaveBeenCalled();
   });
 });

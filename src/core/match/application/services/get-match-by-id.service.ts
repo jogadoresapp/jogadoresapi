@@ -8,10 +8,10 @@ export class GetMatchByIdService {
   constructor(private readonly matchRepository: MatchRepository) {}
 
   async execute(id: string): Promise<Match> {
-    const matches = await this.matchRepository.findById(id);
+    const match = await this.matchRepository.findById(id);
 
-    validateExistence(matches, 'Partida', id);
+    validateExistence(match, 'Partida', id);
 
-    return matches;
+    return match;
   }
 }

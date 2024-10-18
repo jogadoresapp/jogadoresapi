@@ -10,6 +10,6 @@ export class CreateMatchService implements CreateMatchUseCase {
 
   async execute(command: CreateMatchCommand): Promise<string> {
     const savedMatch = await this.matchRepository.save(Match.newMatch(command));
-    return savedMatch.getId();
+    return savedMatch.id;
   }
 }
