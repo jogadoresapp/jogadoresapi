@@ -52,7 +52,7 @@ describe('PlayerController', () => {
           useValue: {
             execute: jest.fn().mockResolvedValue(
               Player.create({
-                id: '1',
+                _id: '1',
                 name: 'John Doe',
                 email: 'jhon@doe.com',
                 password: '123432',
@@ -73,7 +73,7 @@ describe('PlayerController', () => {
           useValue: {
             execute: jest.fn().mockResolvedValue(
               Player.create({
-                id: '1',
+                _id: '1',
                 name: 'John Doe',
                 email: 'jhon@doe.com',
                 password: '123432',
@@ -110,7 +110,7 @@ describe('PlayerController', () => {
     updatePlayerService = module.get<UpdatePlayerService>(UpdatePlayerService);
 
     player = Player.create({
-      id: '1',
+      _id: '1',
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: '123432',
@@ -123,7 +123,7 @@ describe('PlayerController', () => {
       state: 'SP',
       rating: 10,
     });
-    token = jwtService.sign({ sub: player.id, email: player.email });
+    token = jwtService.sign({ sub: player._id, email: player.email });
   });
 
   afterAll(async () => {

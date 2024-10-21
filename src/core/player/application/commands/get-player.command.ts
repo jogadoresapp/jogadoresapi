@@ -8,7 +8,7 @@ import {
 
 export class GetPlayerCommand {
   @ApiPropertyOptional()
-  id: string;
+  _id: string;
 
   @ApiPropertyOptional()
   name: string;

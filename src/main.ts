@@ -24,11 +24,12 @@ async function bootstrap() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'Authorization',
-        description: 'JWT Authorization header',
+        name: 'JWT',
+        description: 'Enter JWT token',
         in: 'header',
+        'x-tokenName': 'Authorization',
       },
-      'JWT',
+      'jwt',
     )
     .build();
 

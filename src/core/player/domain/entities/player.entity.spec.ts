@@ -22,7 +22,7 @@ describe('Player Schema', () => {
 
   it('deve criar uma instância de Player usando o método estático create', () => {
     const player = Player.create({
-      id: '1',
+      _id: '1',
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: 'password123',

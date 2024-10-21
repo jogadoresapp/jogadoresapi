@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { RegisterPlayerService } from '../../application/services/register-player.service';
 import { GetPlayerService } from '../../application/services/get-player.service';
@@ -57,6 +58,7 @@ export class PlayerController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Pegar jogador pelo id' })
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
@@ -72,6 +74,7 @@ export class PlayerController {
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('jwt')
   @ApiOperation({ summary: 'Atualizar jogador' })
   @ApiParam({ name: 'id', type: 'string', description: 'Jogador ID' })
   @ApiBody({ type: UpdatePlayerCommand })
