@@ -12,6 +12,12 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { JwtStrategy } from '../../../auth/infrastructure/strategies/jwt.strategy';
 import { Player } from '../../domain/entities/player.entity';
+import {
+  PlayerDominantFoot,
+  PlayerPosition,
+  PlayerPreferredDays,
+  PlayerPreferredSchedule,
+} from '../../domain/enums/player';
 
 describe('PlayerController', () => {
   let app: INestApplication;
@@ -50,6 +56,14 @@ describe('PlayerController', () => {
                 name: 'John Doe',
                 email: 'jhon@doe.com',
                 password: '123432',
+                nickname: 'John',
+                position: [PlayerPosition.ATACANTE],
+                dominantFoot: PlayerDominantFoot.AMBIDESTRO,
+                preferredSchedule: [PlayerPreferredSchedule.MANHA],
+                preferredDays: [PlayerPreferredDays.DOMINGO],
+                city: 'São Paulo',
+                state: 'SP',
+                rating: 10,
               }),
             ),
           },
@@ -63,6 +77,14 @@ describe('PlayerController', () => {
                 name: 'John Doe',
                 email: 'jhon@doe.com',
                 password: '123432',
+                nickname: 'John',
+                position: [PlayerPosition.ATACANTE],
+                dominantFoot: PlayerDominantFoot.AMBIDESTRO,
+                preferredSchedule: [PlayerPreferredSchedule.MANHA],
+                preferredDays: [PlayerPreferredDays.DOMINGO],
+                city: 'São Paulo',
+                state: 'SP',
+                rating: 10,
               }),
             ),
           },
@@ -92,6 +114,14 @@ describe('PlayerController', () => {
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: '123432',
+      nickname: 'John',
+      position: [PlayerPosition.ATACANTE],
+      dominantFoot: PlayerDominantFoot.AMBIDESTRO,
+      preferredSchedule: [PlayerPreferredSchedule.MANHA],
+      preferredDays: [PlayerPreferredDays.DOMINGO],
+      city: 'São Paulo',
+      state: 'SP',
+      rating: 10,
     });
     token = jwtService.sign({ sub: player.id, email: player.email });
   });

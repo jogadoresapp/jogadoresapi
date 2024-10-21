@@ -1,5 +1,5 @@
-import { Player } from '../../domain/entities/player.entity';
+import { GetPlayerCommand } from '../commands/get-player.command';
 
 export interface GetPlayerUseCase {
-  execute(id: string): Promise<Player>;
+  execute(id: string): Promise<GetPlayerCommand>;
 }

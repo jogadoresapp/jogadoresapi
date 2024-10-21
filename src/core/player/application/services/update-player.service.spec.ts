@@ -4,6 +4,12 @@ import { UpdatePlayerService } from './update-player.service';
 import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 import { UpdatePlayerCommand } from '../commands/update-player.command';
 import { Player } from '../../domain/entities/player.entity';
+import {
+  PlayerDominantFoot,
+  PlayerPosition,
+  PlayerPreferredDays,
+  PlayerPreferredSchedule,
+} from '../../domain/enums/player';
 
 describe('UpdatePlayerService', () => {
   let service: UpdatePlayerService;
@@ -45,6 +51,14 @@ describe('UpdatePlayerService', () => {
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: '123432',
+      nickname: 'John',
+      position: [PlayerPosition.ATACANTE],
+      dominantFoot: PlayerDominantFoot.AMBIDESTRO,
+      preferredSchedule: [PlayerPreferredSchedule.MANHA],
+      preferredDays: [PlayerPreferredDays.DOMINGO],
+      city: 'São Paulo',
+      state: 'SP',
+      rating: 10,
     });
     mockPlayerRepository.findById.mockResolvedValue(player);
     mockPlayerRepository.update.mockResolvedValue(player);

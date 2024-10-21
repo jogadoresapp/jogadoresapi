@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Player, PlayerDocument } from '../../domain/entities/player.entity';
+import { GetPlayerCommand } from '../../application/commands/get-player.command';
 
 @Injectable()
 export class PlayerRepository {
@@ -15,11 +16,11 @@ export class PlayerRepository {
     return createdPlayer.toObject();
   }
 
-  async findById(id: string): Promise<Player | null> {
+  async findById(id: string): Promise<GetPlayerCommand> {
     return this.playerModel.findById(id).exec();
   }
 
-  async findByEmail(email: string): Promise<Player | null> {
+  async findByEmail(email: string): Promise<Player> {
     return this.playerModel.findOne({ email }).exec();
   }
 
