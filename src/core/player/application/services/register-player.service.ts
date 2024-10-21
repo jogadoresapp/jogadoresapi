@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RegisterPlayerUseCase } from '../usecases/register-player.use-case';
 import { RegisterPlayerCommand } from '../commands/register-player.command';
 import { Player } from '../../domain/entities/player.entity';
@@ -10,9 +10,6 @@ export class RegisterPlayerService implements RegisterPlayerUseCase {
   constructor(private readonly repository: PlayerRepository) {}
 
   async execute(command: RegisterPlayerCommand): Promise<string> {
-    if (this.repository.findByEmail(command.email)) {
-      throw new BadRequestException('Email já cadastrado');
-    }
     const hashedPassword = await bcrypt.hash(command.password, 10);
     const player = Player.create(
       new Player({
@@ -29,6 +26,6 @@ export class RegisterPlayerService implements RegisterPlayerUseCase {
       }),
     );
     const savedPlayer = await this.repository.save(player);
-    return savedPlayer.id;
+    return savedPlayer.email;
   }
 }

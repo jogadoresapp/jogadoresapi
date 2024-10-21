@@ -38,7 +38,7 @@ describe('GetPlayerService', () => {
 
   it('deve retornar um jogador', async () => {
     const player = Player.create({
-      id: '1',
+      _id: '1',
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: '123432',

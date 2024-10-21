@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
+import mongoose, { HydratedDocument } from 'mongoose';
 import {
   PlayerDominantFoot,
   PlayerPosition,
@@ -12,12 +11,8 @@ export type PlayerDocument = HydratedDocument<Player>;
 
 @Schema()
 export class Player {
-  @Prop({
-    type: String,
-    default: uuidv4,
-    unique: true,
-  })
-  id: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
+  _id: string;
 
   @Prop({ required: true })
   name: string;
