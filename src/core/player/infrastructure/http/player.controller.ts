@@ -23,6 +23,7 @@ import { RegisterPlayerCommand } from '../../application/commands/register-playe
 import { Player } from '../../domain/entities/player.entity';
 import { UpdatePlayerCommand } from '../../application/commands/update-player.command';
 import { AuthGuard } from '@nestjs/passport';
+import { GetPlayerCommand } from '../../application/commands/get-player.command';
 
 @ApiTags('players')
 @Controller('player')
@@ -61,23 +62,22 @@ export class PlayerController {
   @ApiParam({ name: 'id', type: 'string', description: 'Player ID' })
   @ApiResponse({
     status: 200,
-    type: Player,
+    type: GetPlayerCommand,
   })
-  @ApiResponse({ status: 404, description: 'Player not found.' })
-  async getPlayer(@Param('id') id: string): Promise<Player> {
+  @ApiResponse({ status: 404, description: 'Jogador não encontrado' })
+  async getPlayer(@Param('id') id: string): Promise<GetPlayerCommand> {
     return this.getPlayerService.execute(id);
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('jwt'))
-  @ApiOperation({ summary: 'Update a player' })
+  @ApiOperation({ summary: 'Atualizar jogador' })
   @ApiParam({ name: 'id', type: 'string', description: 'Jogador ID' })
   @ApiBody({ type: UpdatePlayerCommand })
   @ApiResponse({
     status: 200,
     description: 'Jogador editado com sucesso.',
-    type: Player,
   })
   @ApiResponse({ status: 404, description: 'Jogador não encontrado.' })
   async updatePlayer(

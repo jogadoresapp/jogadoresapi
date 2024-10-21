@@ -3,6 +3,12 @@ import { GetPlayerService } from './get-player.service';
 import { PlayerRepository } from '../../infrastructure/repositories/player.repository';
 import { Player } from '../../domain/entities/player.entity';
 import { NotFoundException } from '@nestjs/common';
+import {
+  PlayerDominantFoot,
+  PlayerPosition,
+  PlayerPreferredDays,
+  PlayerPreferredSchedule,
+} from '../../domain/enums/player';
 
 describe('GetPlayerService', () => {
   let service: GetPlayerService;
@@ -30,12 +36,20 @@ describe('GetPlayerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('deve retornar o jogador quando encotrado ele cadastrado', async () => {
+  it('deve retornar um jogador', async () => {
     const player = Player.create({
       id: '1',
       name: 'John Doe',
       email: 'jhon@doe.com',
       password: '123432',
+      nickname: 'John',
+      position: [PlayerPosition.ATACANTE],
+      dominantFoot: PlayerDominantFoot.AMBIDESTRO,
+      preferredSchedule: [PlayerPreferredSchedule.MANHA],
+      preferredDays: [PlayerPreferredDays.DOMINGO],
+      city: 'São Paulo',
+      state: 'SP',
+      rating: 10,
     });
 
     mockPlayerRepository.findById.mockResolvedValue(player);
@@ -44,7 +58,7 @@ describe('GetPlayerService', () => {
     expect(mockPlayerRepository.findById).toHaveBeenCalledWith('1');
   });
 
-  it('deve retornar NotFoundEcep', async () => {
+  it('deve retornar NotFoundExceptions', async () => {
     mockPlayerRepository.findById.mockResolvedValue(null);
     await expect(service.execute('5')).rejects.toThrow(NotFoundException);
     expect(mockPlayerRepository.findById).toHaveBeenCalledWith('1');
